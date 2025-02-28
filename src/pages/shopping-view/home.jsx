@@ -72,7 +72,7 @@ const featureImageList = [
   {
     id: 3,
     image: bannerThree,
-    title: "We Give You the Best",
+    title: "Discover the Best of the Best",
     description: "Quality and comfort like never before for you and your family.",
   },
 ];
@@ -142,10 +142,10 @@ const featureImageList = [
  
   return (
     <div className="flex flex-col min-h-screen ">
-      <div className="relative w-full flex items-center justify-between py-12 px-16 md:px-28 bg-gray-100 rounded-lg shadow-lg">
+      <div className="relative w-full flex flex-col md:flex-row items-center justify-between py-12 px-16 md:px-28 bg-gray-200 rounded-lg shadow-lg">
         {/* Text Section */}
-        <div className=" space-y-4">
-          <h1 className="text-xl md:text-3xl 2xl:text-4xl font-bold text-gray-900 max-w-sm">
+        <div className=" space-y-4 text-center md:text-left">
+          <h1 className="text-3xl md:text-5xl 2xl:text-[3.8rem] font-bold text-gray-900 max-w-xl md:leading-[50px] 2xl:leading-[70px]">
             {featureImageList[currentSlide].title}
           </h1>
           <p className="text-lg text-gray-700">
@@ -153,14 +153,14 @@ const featureImageList = [
           </p>
           <Button
             onClick={() => navigate("/shop/listing")}
-            className="bg-black text-white px-6 py-2 rounded-lg cursor-pointer"
+            className="bg-black text-white px-6 py-2.5 rounded-lg cursor-pointer"
           >
             Shop Now
           </Button>
         </div>
 
         {/* Image Section */}
-        <div className="hidden md:block">
+        <div className="">
           <img
             src={featureImageList[currentSlide].image}
             alt="Feature"
@@ -195,7 +195,7 @@ const featureImageList = [
         </Button>
       </div>
       <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-12">
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by category
           </h2>
@@ -237,11 +237,11 @@ const featureImageList = [
       </section> */}
 
       <section className="py-12">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-12">
           <h2 className="text-3xl font-bold text-center mb-8">
             Feature Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile

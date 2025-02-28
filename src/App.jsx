@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PaystackReturnPage from "./pages/shopping-view/paystack-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
+import { BallTriangle } from "react-loader-spinner";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -32,9 +33,21 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
-
-  console.log(isLoading, user);
+  if (isLoading)
+    return (
+      <div className="loader-container flex justify-center items-center h-screen">
+        <BallTriangle
+          height={100}
+          width={100}
+          radius={5}
+          color="#4fa94d"
+          ariaLabel="ball-triangle-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+        />
+      </div>
+    );
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">

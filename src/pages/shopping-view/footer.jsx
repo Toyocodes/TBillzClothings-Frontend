@@ -3,7 +3,7 @@ import { FiSend } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black text-white py-12 mt-12">
+    <footer className="relative bg-black text-white py-12 md:px-24 px-12 mt-12">
       {/* Curved Top Border */}
       <div className="absolute top-0 left-0 w-full h-10 bg-black -translate-y-1/2 rounded-t-[50%]"></div>
 

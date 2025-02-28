@@ -3,7 +3,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
-import axios from "axios";
+import axios from "../../lib/axios";
 import { Skeleton } from "../ui/skeleton";
 
 function ProductImageUpload({
@@ -33,14 +33,7 @@ function ProductImageUpload({
     if (droppedFile) setImageFile(droppedFile);
   }
 
-  // function handleRemoveImage() {
-  //   setImageFile(null);
-  //   // Optionally clear the uploaded image URL so a new image can be selected
-  //   setUploadedImageUrl("");
-  //   if (inputRef.current) {
-  //     inputRef.current.value = "";
-  //   }
-  // }
+
 
   function handleRemoveImage() {
     setImageFile(null);
@@ -55,7 +48,7 @@ function ProductImageUpload({
     const data = new FormData();
     data.append("my_file", imageFile);
     const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
+      "/admin/products/upload-image",
       data
     );
 
