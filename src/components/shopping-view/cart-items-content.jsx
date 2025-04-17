@@ -7,12 +7,13 @@ import { useToast } from "../ui/use-toast";
 
 function UserCartItemsContent({ cartItem }) {
   const { user } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.shopCart);
+  const { cartItems} = useSelector((state) => state.shopCart);
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
   function handleUpdateQuantity(getCartItem, typeOfAction) {
+    
     if (typeOfAction == "plus") {
       let getCartItems = cartItems.items || [];
 

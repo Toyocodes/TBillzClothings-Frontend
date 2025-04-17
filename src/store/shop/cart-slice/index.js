@@ -4,23 +4,25 @@ import axios from "../../../lib/axios";
 const initialState = {
   cartItems: [],
   isLoading: false,
+  error: null,
 };
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity }) => {
-    const response = await axios.post(
-      "/shop/cart/add",
-      {
+  async ({ userId, productId, quantity }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("/shop/cart/add", {
         userId,
         productId,
         quantity,
-      }
-    );
-
-    return response.data;
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
   }
 );
+
 
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
@@ -63,19 +65,25 @@ export const updateCartQuantity = createAsyncThunk(
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
   initialState,
-  reducers: {},
+  // reducers: {},
+  reducers: {
+    clearCartError(state) {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
+        state.error = null; 
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.cartItems = action.payload.data;
       })
-      .addCase(addToCart.rejected, (state) => {
+      .addCase(addToCart.rejected, (state, action) => {
         state.isLoading = false;
-        state.cartItems = [];
+        state.error = action.payload?.message || "Login to add to cart";
       })
       .addCase(fetchCartItems.pending, (state) => {
         state.isLoading = true;
@@ -113,4 +121,5 @@ const shoppingCartSlice = createSlice({
   },
 });
 
+export const { clearCartError } = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;

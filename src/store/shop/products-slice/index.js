@@ -21,8 +21,6 @@ export const fetchAllFilteredProducts = createAsyncThunk(
       `/shop/products/get?${query}`
     );
 
-    console.log(result);
-
     return result?.data;
   }
 );

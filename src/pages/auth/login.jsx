@@ -2,6 +2,7 @@ import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
 import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -35,6 +36,12 @@ function AuthLogin() {
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
+      <div className="my-4 flex justify-center items-center">
+        <a href="/" className="font-bold flex items-center hover:text-red-500">
+          <p> Go Back to Home</p>
+          <ArrowRight className="ml-2" />
+        </a>
+      </div>
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Sign in to your account
@@ -42,7 +49,7 @@ function AuthLogin() {
         <p className="mt-2">
           Don't have an account
           <Link
-            className="font-medium ml-2 text-primary hover:underline"
+            className="font-medium ml-2 text-primary hover:underline underline"
             to="/auth/register"
           >
             Register

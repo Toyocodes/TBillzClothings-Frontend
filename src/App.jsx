@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        <Route
+        {/* <Route
           path="/"
           element={
             <CheckAuth
@@ -60,7 +60,9 @@ function App() {
               user={user}
             ></CheckAuth>
           }
-        />
+        /> */}
+        <Route path="/" element={<Navigate to="/shop/home" />} />
+
         <Route
           path="/auth"
           element={

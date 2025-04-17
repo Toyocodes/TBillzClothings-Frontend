@@ -5,7 +5,11 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import {
+  addToCart,
+  fetchCartItems,
+  clearCartError,
+} from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 import { setProductDetails } from "@/store/shop/products-slice";
 import { Label } from "../ui/label";
@@ -15,58 +19,78 @@ import { addReview, getReviews } from "@/store/shop/review-slice";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
+  const [cartMsg, setCartMsg] = useState("");
   const [rating, setRating] = useState(0);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.shopCart);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { cartItems, error: cartError } = useSelector(
+    (state) => state.shopCart
+  );
   const { reviews } = useSelector((state) => state.shopReview);
 
   const { toast } = useToast();
 
   function handleRatingChange(getRating) {
-    console.log(getRating, "getRating");
-
     setRating(getRating);
   }
 
-  function handleAddToCart(getCurrentProductId, getTotalStock) {
-    let getCartItems = cartItems.items || [];
-
-    if (getCartItems.length) {
-      const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
-      );
-      if (indexOfCurrentItem > -1) {
-        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-        if (getQuantity + 1 > getTotalStock) {
-          toast({
-            title: `Only ${getQuantity} left in stock`,
-            variant: "destructive",
-          });
-
-          return;
-        }
-      }
+  useEffect(() => {
+    if (cartError) {
+      setCartMsg(cartError);
+      toast({ title: cartError, variant: "destructive" });
     }
+  }, [cartError, toast]);
+
+  function handleAddToCart(getCurrentProductId, getTotalStock) {
+    // 1) Stock‑check
+    const items = cartItems.items || [];
+    const indexOfCurrentItem = items.findIndex(
+      (i) => i.productId === getCurrentProductId
+    );
+    if (
+      indexOfCurrentItem > -1 &&
+      items[indexOfCurrentItem].quantity + 1 > getTotalStock
+    ) {
+      toast({
+        title: `Only ${items[indexOfCurrentItem].quantity} left in stock`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 2) Clear any previous cart error
+    dispatch(clearCartError());
+
+    // 3) Dispatch addToCart and unwrap to catch rejections
     dispatch(
       addToCart({
-        userId: user?.id,
+        userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
       })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast({
-          title: "Product is added to cart",
-        });
-      }
-    });
+    )
+      .unwrap() // will throw if the thunk was rejected
+      .then((resp) => {
+        // resp === response.data from your API
+        const successMsg = resp.message || "Product added to cart";
+        setCartMsg(successMsg);
+        toast({ title: successMsg });
+
+        // 4) Refresh the cart
+        dispatch(fetchCartItems(user.id));
+      })
+      .catch((errPayload) => {
+        // errPayload === what you returned via rejectWithValue
+        const errorMsg = errPayload?.message || "Login to add to cart";
+        setCartMsg(errorMsg);
+        toast({ title: errorMsg, variant: "destructive" });
+      });
   }
 
   function handleDialogClose() {
     setOpen(false);
     dispatch(setProductDetails());
+    dispatch(clearCartError());
     setRating(0);
     setReviewMsg("");
   }
@@ -81,13 +105,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         reviewValue: rating,
       })
     ).then((data) => {
+      const message = data?.payload?.message || "Review added successfully";
       if (data.payload.success) {
         setRating(0);
         setReviewMsg("");
         dispatch(getReviews(productDetails?._id));
-        toast({
-          title: "Review added successfully!",
-        });
+        toast({ title: message });
+      } else {
+        toast({ title: message, variant: "destructive" });
       }
     });
   }
@@ -95,8 +120,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   useEffect(() => {
     if (productDetails !== null) dispatch(getReviews(productDetails?._id));
   }, [productDetails]);
-
-  console.log(reviews, "reviews");
 
   const averageReview =
     reviews && reviews.length > 0
@@ -163,8 +186,13 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 Add to Cart
               </Button>
             )}
+            {cartMsg && (
+              <p className="mt-2 text-sm text-destructive">{cartMsg}</p>
+            )}
           </div>
           <Separator />
+
+          {/* Add review section */}
           <div className="max-h-[300px] overflow-auto">
             <h2 className="text-xl font-bold mb-4">Reviews</h2>
             <div className="grid gap-6">
