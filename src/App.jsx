@@ -22,6 +22,7 @@ import PaystackReturnPage from "./pages/shopping-view/paystack-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import { BallTriangle } from "react-loader-spinner";
+import Wishlist from "./pages/shopping-view/wishlist";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -52,15 +53,6 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
-        {/* <Route
-          path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
-        /> */}
         <Route path="/" element={<Navigate to="/shop/home" />} />
 
         <Route
@@ -86,7 +78,29 @@ function App() {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
         </Route>
+
+        <Route path="/shop" element={<ShoppingLayout />}>
+          <Route path="home" element={<ShoppingHome />} />
+          <Route path="listing" element={<ShoppingListing />} />
+        </Route>
+
+        {/* Protected SHOP Pages - require auth */}
         <Route
+          path="/shop"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <ShoppingLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="account" element={<ShoppingAccount />} />
+          <Route path="paystack-return" element={<PaystackReturnPage />} />
+          <Route path="payment-success" element={<PaymentSuccessPage />} />
+        </Route>
+
+
+        {/* <Route
           path="/shop"
           element={
             <CheckAuth isAuthenticated={isAuthenticated} user={user}>
@@ -100,8 +114,9 @@ function App() {
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="paystack-return" element={<PaystackReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="search" element={<SearchProducts />} />
-        </Route>
+        </Route> */}
+        <Route path="/search" element={<SearchProducts />} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

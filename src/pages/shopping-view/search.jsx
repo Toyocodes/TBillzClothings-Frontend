@@ -8,6 +8,7 @@ import {
   getSearchResults,
   resetSearchResults,
 } from "@/store/shop/search-slice";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
@@ -24,54 +25,111 @@ function SearchProducts() {
 
   const { cartItems } = useSelector((state) => state.shopCart);
   const { toast } = useToast();
+
+  const [hasSearched, setHasSearched] = useState(false);
+
   useEffect(() => {
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
-      setTimeout(() => {
-        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(getSearchResults(keyword));
+    const trimmed = keyword.trim();
+    if (trimmed.length > 3) {
+      const timeout = setTimeout(() => {
+        setSearchParams(new URLSearchParams(`?keyword=${trimmed}`));
+        dispatch(getSearchResults(trimmed));
       }, 1000);
+      return () => clearTimeout(timeout);
     } else {
-      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+      setSearchParams(new URLSearchParams());
       dispatch(resetSearchResults());
     }
-  }, [keyword]);
+  }, [keyword, dispatch, setSearchParams]);
+
+  // useEffect(() => {
+  //   if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
+  //     setTimeout(() => {
+  //       setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+  //       dispatch(getSearchResults(keyword));
+  //     }, 1000);
+  //   } else {
+  //     setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
+  //     dispatch(resetSearchResults());
+  //   }
+  // }, [keyword]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    console.log(cartItems);
-    let getCartItems = cartItems.items || [];
+    if (!user?.id) {
+      toast({
+        title: "Please log in to add items to your cart",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    if (getCartItems.length) {
-      const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
-      );
-      if (indexOfCurrentItem > -1) {
-        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-        if (getQuantity + 1 > getTotalStock) {
-          toast({
-            title: `Only ${getQuantity} left in stock`,
-            variant: "destructive",
-          });
-
-          return;
-        }
+    const getCartItems = cartItems.items || [];
+    const indexOfCurrentItem = getCartItems.findIndex(
+      (item) => item.productId === getCurrentProductId
+    );
+    if (indexOfCurrentItem > -1) {
+      const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+      if (getQuantity + 1 > getTotalStock) {
+        toast({
+          title: `Only ${getQuantity} left in stock`,
+          variant: "destructive",
+        });
+        return;
       }
     }
 
     dispatch(
       addToCart({
-        userId: user?.id,
+        userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
       })
     ).then((data) => {
       if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+        dispatch(fetchCartItems(user.id));
         toast({
-          title: "Product is added to cart",
+          title: "Product added to cart",
         });
       }
     });
   }
+
+  // function handleAddtoCart(getCurrentProductId, getTotalStock) {
+  //   console.log(cartItems);
+  //   let getCartItems = cartItems.items || [];
+
+  //   if (getCartItems.length) {
+  //     const indexOfCurrentItem = getCartItems.findIndex(
+  //       (item) => item.productId === getCurrentProductId
+  //     );
+  //     if (indexOfCurrentItem > -1) {
+  //       const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+  //       if (getQuantity + 1 > getTotalStock) {
+  //         toast({
+  //           title: `Only ${getQuantity} left in stock`,
+  //           variant: "destructive",
+  //         });
+
+  //         return;
+  //       }
+  //     }
+  //   }
+
+  //   dispatch(
+  //     addToCart({
+  //       userId: user?.id,
+  //       productId: getCurrentProductId,
+  //       quantity: 1,
+  //     })
+  //   ).then((data) => {
+  //     if (data?.payload?.success) {
+  //       dispatch(fetchCartItems(user?.id));
+  //       toast({
+  //         title: "Product is added to cart",
+  //       });
+  //     }
+  //   });
+  // }
 
   function handleGetProductDetails(getCurrentProductId) {
     console.log(getCurrentProductId);
@@ -82,39 +140,84 @@ function SearchProducts() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  console.log(searchResults, "searchResults");
-
   return (
-    <div className="container mx-auto md:px-6 px-4 py-8">
-      <div className="flex justify-center mb-8">
-        <div className="w-full flex items-center">
+     <div className="container mx-auto px-4 md:px-6 py-12">
+      <div className="mb-7 mt-12 flex justify-center items-center">
+        <a href="/" className="text-sm font-bold flex items-center hover:text-[#82e600]">
+          <p> Go Back to Home</p>
+          <ArrowRight className="ml-2" />
+        </a>
+      </div>
+    <div >
+     
+      {/* Search Bar */}
+      <div className="flex justify-center mb-10">
+        <div className="w-full max-w-2xl">
           <Input
             value={keyword}
             name="keyword"
             onChange={(event) => setKeyword(event.target.value)}
-            className="py-6"
-            placeholder="Search Products..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setHasSearched(true);
+              }
+            }}
+            className="py-5 px-6 rounded-2xl shadow-sm focus:ring-2 focus:ring-primary focus:outline-none text-base"
+            placeholder="🔍 Search for products..."
           />
         </div>
       </div>
-      {!searchResults.length ? (
-        <h1 className="text-5xl font-extrabold">No result found!</h1>
-      ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        {searchResults.map((item) => (
-          <ShoppingProductTile
-            handleAddtoCart={handleAddtoCart}
-            product={item}
-            handleGetProductDetails={handleGetProductDetails}
-          />
-        ))}
-      </div>
+
+      {/* Initial Prompt */}
+      {!hasSearched && !keyword && (
+        <div className="text-center py-12">
+          <h2 className="text-3xl font-semibold text-gray-700 mb-4">
+            What are you looking for today? 🛍️
+          </h2>
+          <p className="text-gray-500">
+            Type a keyword and hit Enter to begin.
+          </p>
+        </div>
+      )}
+
+      {/* No Results Found */}
+      {hasSearched && keyword && !searchResults.length && (
+        <div className="text-center py-16">
+          <h2 className="text-4xl font-bold text-gray-700 mb-4">
+            No results found 😔
+          </h2>
+          <p className="text-gray-500">
+            Try searching with different keywords.
+          </p>
+        </div>
+      )}
+
+      {/* Search Results */}
+      {!!searchResults.length && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {searchResults.map((item) => (
+            <div
+              key={item.id}
+              className="transform transition duration-300 hover:scale-[1.02]"
+            >
+              <ShoppingProductTile
+                handleAddtoCart={handleAddtoCart}
+                product={item}
+                handleGetProductDetails={handleGetProductDetails}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Product Details Modal */}
       <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
     </div>
+     </div>
   );
 }
 

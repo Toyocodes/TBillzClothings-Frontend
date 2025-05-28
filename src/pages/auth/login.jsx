@@ -37,7 +37,7 @@ function AuthLogin() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="my-4 flex justify-center items-center">
-        <a href="/" className="font-bold flex items-center hover:text-red-500">
+        <a href="/" className="font-bold flex items-center hover:text-[#82e600]">
           <p> Go Back to Home</p>
           <ArrowRight className="ml-2" />
         </a>

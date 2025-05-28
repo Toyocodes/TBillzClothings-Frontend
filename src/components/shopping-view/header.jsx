@@ -1,4 +1,4 @@
-import { HomeIcon, HousePlug, ListOrdered, LogOut, LucideShoppingCart, Menu, ShoppingBagIcon, ShoppingBasket, ShoppingBasketIcon, ShoppingCart, ShoppingCartIcon, StoreIcon, UserCog } from "lucide-react";
+import { HeartIcon, HomeIcon, HousePlug, ListOrdered, LogOut, LucideShoppingCart, Menu, ShoppingBagIcon, ShoppingBasket, ShoppingBasketIcon, ShoppingCart, ShoppingCartIcon, StoreIcon, UserCog } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -75,9 +75,16 @@ function HeaderRightContent() {
     dispatch(logoutUser());
   }
 
+  // useEffect(() => {
+  //   dispatch(fetchCartItems(user?.id));
+  // }, [dispatch]);
+
   useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
-  }, [dispatch]);
+  if (user?.id) {
+    dispatch(fetchCartItems(user.id));
+  }
+}, [dispatch, user?.id]);
+
 
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4 cursor-pointer">
@@ -120,6 +127,10 @@ function HeaderRightContent() {
             <DropdownMenuItem onClick={() => navigate("/shop/account")}>
               <UserCog className="mr-2 h-4 w-4" />
               Account
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/wishlist")}>
+              My Wishlist
+              <HeartIcon className="mr-2 h-4 w-4" />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
@@ -171,5 +182,5 @@ function ShoppingHeader() {
     </header>
   );
 }
-
+``
 export default ShoppingHeader;

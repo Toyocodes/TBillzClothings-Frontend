@@ -1,4 +1,4 @@
-import { StarIcon } from "lucide-react";
+import { HeartIcon, StarIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
@@ -16,6 +16,7 @@ import { Label } from "../ui/label";
 import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
 import { addReview, getReviews } from "@/store/shop/review-slice";
+import { addToWishlist, removeFromWishlist } from "@/store/shop/wishlist-slice";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
@@ -27,8 +28,13 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     (state) => state.shopCart
   );
   const { reviews } = useSelector((state) => state.shopReview);
+  const { wishlistItems = [] } = useSelector((state) => state.shopWishlist);
 
   const { toast } = useToast();
+
+  const isInWishlist = wishlistItems.find(
+    (item) => item.productId._id === productDetails?._id
+  );
 
   function handleRatingChange(getRating) {
     setRating(getRating);
@@ -127,120 +133,166 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         reviews.length
       : 0;
 
-  return (
-    <Dialog open={open} onOpenChange={handleDialogClose} className="opacity-45">
-      <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
-        <div className="relative overflow-hidden rounded-lg">
-          <img
-            src={productDetails?.image}
-            alt={productDetails?.title}
-            width={600}
-            height={600}
-            className="aspect-square w-full object-cover"
-          />
-        </div>
-        <div className="">
-          <div>
-            <h1 className="text-3xl font-extrabold">{productDetails?.title}</h1>
-            <p className="text-muted-foreground text-2xl mb-5 mt-4">
-              {productDetails?.description}
-            </p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p
-              className={`text-3xl font-bold text-primary ${
-                productDetails?.salePrice > 0 ? "line-through" : ""
-              }`}
-            >
-              ₦{productDetails?.price}
-            </p>
-            {productDetails?.salePrice > 0 ? (
-              <p className="text-2xl font-bold text-muted-foreground">
-                ₦{productDetails?.salePrice}
-              </p>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-0.5">
-              <StarRatingComponent rating={averageReview} />
-            </div>
-            <span className="text-muted-foreground">
-              ({averageReview.toFixed(2)})
-            </span>
-          </div>
-          <div className="mt-5 mb-5">
-            {productDetails?.totalStock === 0 ? (
-              <Button className="w-full opacity-60 cursor-not-allowed">
-                Out of Stock
-              </Button>
-            ) : (
-              <Button
-                className="w-full"
-                onClick={() =>
-                  handleAddToCart(
-                    productDetails?._id,
-                    productDetails?.totalStock
-                  )
-                }
-              >
-                Add to Cart
-              </Button>
-            )}
-            {cartMsg && (
-              <p className="mt-2 text-sm text-destructive">{cartMsg}</p>
-            )}
-          </div>
-          <Separator />
+  function handleWishlistToggle() {
+    if (!isAuthenticated) {
+      toast({ title: "Login to add item to wishlist", variant: "destructive" });
+      return;
+    }
 
-          {/* Add review section */}
-          <div className="max-h-[300px] overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Reviews</h2>
-            <div className="grid gap-6">
-              {reviews && reviews.length > 0 ? (
-                reviews.map((reviewItem) => (
-                  <div className="flex gap-4">
-                    <Avatar className="w-10 h-10 ">
-                      <AvatarFallback>
-                        {reviewItem?.userName[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold">{reviewItem?.userName}</h3>
-                      </div>
-                      <div className="flex items-center gap-0.5">
-                        <StarRatingComponent rating={reviewItem?.reviewValue} />
-                      </div>
-                      <p className="text-muted-foreground">
-                        {reviewItem.reviewMessage}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <h1>No Reviews</h1>
-              )}
-            </div>
-            <div className="mt-10 flex-col flex gap-2">
-              <Label>Write a review</Label>
-              <div className="flex gap-1">
-                <StarRatingComponent
-                  rating={rating}
-                  handleRatingChange={handleRatingChange}
-                />
-              </div>
-              <Input
-                name="reviewMsg"
-                value={reviewMsg}
-                onChange={(event) => setReviewMsg(event.target.value)}
-                placeholder="Write a review..."
+    if (isInWishlist) {
+      dispatch(
+        removeFromWishlist({ userId: user.id, productId: productDetails._id })
+      )
+        .unwrap()
+        .then(() => toast({ title: "Removed from wishlist" }));
+    } else {
+      dispatch(
+        addToWishlist({ userId: user.id, productId: productDetails._id })
+      )
+        .unwrap()
+        .then(() => toast({ title: "Added to wishlist" }))
+        .catch((err) => toast({ title: err.message, variant: "destructive" }));
+    }
+  }
+  return (
+    <Dialog open={open} onOpenChange={handleDialogClose}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[80vw] p-4 sm:p-6 md:p-10">
+        <div className="w-full flex flex-col md:flex-row gap-8">
+          {/* Product image */}
+          <div className="w-full flex justify-center md:block md:w-1/2">
+            <div className="relative overflow-hidden rounded-lg w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] md:w-full md:h-full">
+              <img
+                src={productDetails?.image}
+                alt={productDetails?.title}
+                className="aspect-square object-cover w-full h-full rounded-md"
               />
-              <Button
-                onClick={handleAddReview}
-                disabled={reviewMsg.trim() === ""}
-              >
-                Submit
-              </Button>
+            </div>
+          </div>
+
+          {/* Product content */}
+          <div className="w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl md:text-3xl font-extrabold">
+                  {productDetails?.title}
+                </h1>
+                <button
+                  onClick={handleWishlistToggle}
+                  className={`text-[#4c7814] bg-transparent border-none hover:bg-transparent focus:outline-none focus:ring-0 rounded-full p-1 ${
+                    isInWishlist ? "bg-[#82e600]" : ""
+                  }`}
+                >
+                  <HeartIcon className="w-6 h-6" />
+                </button>
+              </div>
+
+              <p className="text-muted-foreground text-base md:text-lg mb-5 mt-4">
+                {productDetails?.description}
+              </p>
+
+              <div className="flex gap-5">
+                <p
+                  className={`text-xl md:text-2xl font-bold text-primary ${
+                    productDetails?.salePrice > 0 ? "line-through " : ""
+                  }`}
+                >
+                  ₦{productDetails?.price}
+                </p>
+                {productDetails?.salePrice > 0 ? (
+                  <p className="text-xl md:text-2xl font-bold text-muted-foreground">
+                    ₦{productDetails?.salePrice}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex items-center gap-0.5">
+                  <StarRatingComponent rating={averageReview} />
+                </div>
+                <span className="text-muted-foreground">
+                  ({averageReview.toFixed(2)})
+                </span>
+              </div>
+
+              <div className="mt-5 mb-5">
+                {productDetails?.totalStock === 0 ? (
+                  <Button className="w-full opacity-60 cursor-not-allowed">
+                    Out of Stock
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full py-5"
+                    onClick={() =>
+                      handleAddToCart(
+                        productDetails?._id,
+                        productDetails?.totalStock
+                      )
+                    }
+                  >
+                    Add to Cart
+                  </Button>
+                )}
+                {cartMsg && (
+                  <p className="mt-2 text-sm text-destructive">{cartMsg}</p>
+                )}
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            {/* Review Section */}
+            <div className="max-h-[300px] overflow-auto">
+              <h2 className="text-lg md:text-xl font-bold mb-4">Reviews</h2>
+              <div className="grid gap-6">
+                {reviews && reviews.length > 0 ? (
+                  reviews.map((reviewItem, i) => (
+                    <div key={i} className="flex gap-4">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback>
+                          {reviewItem?.userName[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid gap-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold">{reviewItem?.userName}</h3>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <StarRatingComponent
+                            rating={reviewItem?.reviewValue}
+                          />
+                        </div>
+                        <p className="text-muted-foreground">
+                          {reviewItem.reviewMessage}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <h1 className="text-muted-foreground">No Reviews</h1>
+                )}
+              </div>
+
+              <div className="mt-10 flex-col flex gap-2">
+                <Label>Write a review</Label>
+                <div className="flex gap-1">
+                  <StarRatingComponent
+                    rating={rating}
+                    handleRatingChange={handleRatingChange}
+                  />
+                </div>
+                <Input
+                  name="reviewMsg"
+                  value={reviewMsg}
+                  onChange={(event) => setReviewMsg(event.target.value)}
+                  placeholder="Write a review..."
+                />
+                <Button
+                  onClick={handleAddReview}
+                  disabled={reviewMsg.trim() === ""}
+                >
+                  Submit
+                </Button>
+              </div>
             </div>
           </div>
         </div>

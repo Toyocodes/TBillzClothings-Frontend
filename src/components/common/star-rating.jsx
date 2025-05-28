@@ -8,8 +8,8 @@ function StarRatingComponent({ rating, handleRatingChange }) {
     <Button
       className={`p-2 rounded-full transition-colors ${
         star <= rating
-          ? "text-yellow-500 hover:bg-black"
-          : "text-black hover:bg-primary hover:text-primary-foreground"
+          ? "text-[#82e600] hover:bg-[#79a63f]"
+          : "text-black hover:bg-[#79a63f] hover:text-primary-foreground"
       }`}
       variant="outline"
       size="icon"
@@ -17,7 +17,7 @@ function StarRatingComponent({ rating, handleRatingChange }) {
     >
       <StarIcon
         className={`w-6 h-6 ${
-          star <= rating ? "fill-yellow-500" : "fill-black"
+          star <= rating ? "fill-[#82e600]" : "fill-white"
         }`}
       />
     </Button>
