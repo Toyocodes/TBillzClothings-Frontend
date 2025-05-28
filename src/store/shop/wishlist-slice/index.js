@@ -1,37 +1,53 @@
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../../lib/axios";
 
+// Thunks
 export const fetchWishlist = createAsyncThunk(
   "wishlist/fetchWishlist",
-  async (userId) => {
-    const response = await axios.get(`/wishlist/${userId}`);
-    return response.data.data;
+  async (userId, thunkAPI) => {
+    try {
+      const res = await axios.get(`/shop/wishlist/get/${userId}`);
+      return res.data.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message || "Error fetching wishlist");
+    }
   }
 );
 
 export const addToWishlist = createAsyncThunk(
   "wishlist/addToWishlist",
-  async ({ userId, productId }, { rejectWithValue }) => {
+  async ({ userId, productId }, thunkAPI) => {
     try {
-      const response = await axios.post("/wishlist/add", { userId, productId });
-      return response.data.data;
+      const res = await axios.post("/shop/wishlist/add", { userId, productId });
+      return res.data.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return thunkAPI.rejectWithValue(err.response.data.message || "Error adding to wishlist");
     }
   }
 );
 
+// export const removeFromWishlist = createAsyncThunk(
+//   "wishlist/removeFromWishlist",
+//   async ({ userId, productId }, thunkAPI) => {
+//     try {
+//       // await axios.delete("/shop/wishlist/delete", { userId, productId });
+//        await axios.delete(`/shop/wishlist/delete/${userId}/${productId}`);
+//       return productId;
+//     } catch (err) {
+//       return thunkAPI.rejectWithValue(err.response.data.message || "Error removing from wishlist");
+//     }
+//   }
+// );
+
 export const removeFromWishlist = createAsyncThunk(
-  "wishlist/removeFromWishlist",
-  async ({ userId, productId }, { rejectWithValue }) => {
-    try {
-      await axios.post("/wishlist/remove", { userId, productId });
-      return productId;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
+  'wishlist/removeFromWishlist',
+  async ({ userId, productId }) => {
+    const res = await axios.delete(`/shop/wishlist/delete/${userId}/${productId}`);
+    return productId;
   }
 );
+
 
 const wishlistSlice = createSlice({
   name: "wishlist",
@@ -47,18 +63,29 @@ const wishlistSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchWishlist.fulfilled, (state, action) => {
-        state.loading = false;
         state.items = action.payload;
+        state.loading = false;
+        state.error = null;
       })
       .addCase(fetchWishlist.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+      // .addCase(addToWishlist.fulfilled, (state, action) => {
+      //   // state.items.push({ _id: action.payload._id, product: action.payload.productId });
+      //   state.items.push(action.payload);
+
+      // })
       .addCase(addToWishlist.fulfilled, (state, action) => {
-        state.items.push({ productId: action.payload.productId });
-      })
+  const normalizedItem = {
+    _id: action.payload._id,
+    product: action.payload.productId, // normalize key to match rest of frontend
+  };
+  state.items.push(normalizedItem);
+})
+
       .addCase(removeFromWishlist.fulfilled, (state, action) => {
-        state.items = state.items.filter(item => item.productId._id !== action.payload);
+        state.items = state.items.filter((item) => item.product._id !== action.payload);
       });
   },
 });

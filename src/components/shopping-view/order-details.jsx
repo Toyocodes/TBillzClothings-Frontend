@@ -8,34 +8,42 @@ function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <div className="flex mt-6 items-center justify-between">
-            <p className="font-medium">Order ID</p>
-            <Label>{orderDetails?._id}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Date</p>
-            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Price</p>
-            <Label>₦{orderDetails?.totalAmount}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment method</p>
-            <Label>{orderDetails?.paymentMethod}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment Status</p>
-            <Label>{orderDetails?.paymentStatus}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Status</p>
-            <Label>
+    <DialogContent
+      className="w-full sm:max-w-[600px] max-w-[90vw] max-h-[80vh] overflow-auto rounded-xl border bg-white p-6 shadow-xl"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(10px)",
+      }}
+      overlayClassName="!bg-black/10"
+    >
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Order ID:</span>
+              <Label>{orderDetails?._id}</Label>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Order Date:</span>
+              <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total Price:</span>
+              <Label>₦{orderDetails?.totalAmount}</Label>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Payment Method:</span>
+              <Label>{orderDetails?.paymentMethod}</Label>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Payment Status:</span>
+              <Label>{orderDetails?.paymentStatus}</Label>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Order Status:</span>
               <Badge
-                className={`py-1 px-3 ${
+                className={`text-white ${
                   orderDetails?.orderStatus === "confirmed"
                     ? "bg-orange-500"
                     : orderDetails?.orderStatus === "rejected"
@@ -43,43 +51,49 @@ function ShoppingOrderDetailsView({ orderDetails }) {
                     : orderDetails?.orderStatus === "inShipping"
                     ? "bg-yellow-500"
                     : orderDetails?.orderStatus === "delivered"
-                    ? "bg-green-500"
+                    ? "bg-green-600"
                     : "bg-slate-500"
                 }`}
               >
                 {orderDetails?.orderStatus}
               </Badge>
-            </Label>
-          </div>
-        </div>
-        <Separator />
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <div className="font-medium">Order Details</div>
-            <ul className="grid gap-3">
-              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                ? orderDetails?.cartItems.map((item) => (
-                    <li className="flex items-center justify-between">
-                      <span>Title: {item.title}</span>
-                      <span>Quantity: {item.quantity}</span>
-                      <span>Price: ₦{item.price}</span>
-                    </li>
-                  ))
-                : null}
-            </ul>
-          </div>
-        </div>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <div className="font-medium">Shipping Info</div>
-            <div className="grid gap-0.5 text-muted-foreground">
-              <span>{user.userName}</span>
-              <span>{orderDetails?.addressInfo?.address}</span>
-              <span>{orderDetails?.addressInfo?.city}</span>
-              <span>{orderDetails?.addressInfo?.pincode}</span>
-              <span>{orderDetails?.addressInfo?.phone}</span>
-              <span>{orderDetails?.addressInfo?.notes}</span>
             </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Order Items</h3>
+          <ul className="space-y-2 text-sm">
+            {orderDetails?.cartItems?.map((item, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center rounded-lg bg-muted px-4 py-2"
+              >
+                <span className="text-foreground font-medium">{item.title}</span>
+                <div className="flex items-center gap-4 text-muted-foreground">
+                  <span>Qty: {item.quantity}</span>
+                  <span>₦{item.price}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <Separator />
+
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Shipping Information</h3>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p><span className="font-medium text-foreground">Name:</span> {user.userName}</p>
+            <p>{orderDetails?.addressInfo?.address}</p>
+            <p>{orderDetails?.addressInfo?.city}</p>
+            <p>{orderDetails?.addressInfo?.pincode}</p>
+            <p>{orderDetails?.addressInfo?.phone}</p>
+            {orderDetails?.addressInfo?.notes && (
+              <p className="italic">Notes: {orderDetails?.addressInfo?.notes}</p>
+            )}
           </div>
         </div>
       </div>

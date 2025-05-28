@@ -28,12 +28,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     (state) => state.shopCart
   );
   const { reviews } = useSelector((state) => state.shopReview);
-  const { wishlistItems = [] } = useSelector((state) => state.shopWishlist);
+
+  const { items: wishlistItems = [] } = useSelector(
+    (state) => state.shopWishlist
+  );
 
   const { toast } = useToast();
 
-  const isInWishlist = wishlistItems.find(
-    (item) => item.productId._id === productDetails?._id
+  const isInWishlist = wishlistItems.some(
+    (item) => item?.product?._id === productDetails?._id
   );
 
   function handleRatingChange(getRating) {
@@ -178,11 +181,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 </h1>
                 <button
                   onClick={handleWishlistToggle}
-                  className={`text-[#4c7814] bg-transparent border-none hover:bg-transparent focus:outline-none focus:ring-0 rounded-full p-1 ${
-                    isInWishlist ? "bg-[#82e600]" : ""
+                  className={`border-none hover:bg-transparent focus:outline-none focus:ring-0 rounded-full p-1 ${
+                    isInWishlist ? "fill-[#82e600]" : "bg-transparent"
                   }`}
                 >
-                  <HeartIcon className="w-6 h-6" />
+                  <HeartIcon
+                    className="w-8 h-8"
+                    fill={isInWishlist ? "#82e600" : "none"}
+                    stroke={isInWishlist ? "#82e600" : "#4c7814"}
+                  />
                 </button>
               </div>
 
@@ -221,7 +228,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                   </Button>
                 ) : (
                   <Button
-                    className="w-full py-5"
+                    className="w-full py-5 bg-[#6cc000] hover:bg-[#70a131] transition-colors"
                     onClick={() =>
                       handleAddToCart(
                         productDetails?._id,
