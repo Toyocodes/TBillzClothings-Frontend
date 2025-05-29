@@ -135,7 +135,7 @@ function HeaderRightContent() {
           size="icon"
           className="relative"
         >
-          <ShoppingCart className="w-6 h-6" />
+          <ShoppingCart className="w-6 h-6" color="black" />
           <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
             {cartItems?.items?.length || 0}
           </span>
@@ -155,13 +155,13 @@ function HeaderRightContent() {
       {user?.userName ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="bg-black">
-              <AvatarFallback className="bg-black text-white font-extrabold">
+            <Avatar className="bg-[#82e600] text-white cursor-pointer">
+              <AvatarFallback className="bg-[#93d43e] text-white font-extrabold">
                 {user.userName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="right" className="w-56">
+          <DropdownMenuContent side="bottom" className="w-56">
             <DropdownMenuLabel>Logged in as {user.userName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate("/shop/account")}>
@@ -194,18 +194,18 @@ function ShoppingHeader() {
   const [openMobileSheet, setOpenMobileSheet] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-6 md:px-28">
-        <Link to="/shop/home" className="flex items-center gap-2">
-          <ShoppingBagIcon className="h-6 w-6" />
-          <span className="font-bold">TBillzStore</span>
+    <header className="sticky top-0 z-40 w-full border-b bg-black text-white py-4">
+      <div className="flex h-16 items-center justify-between px-12 md:px-28">
+        <Link to="/shop/home" className="flex items-center gap-2 text-3xl">
+          <ShoppingBagIcon className="h-6 w-6" color="#82e600"/>
+          <span className="font-bold text-[#82e600]">TBillzStore</span>
         </Link>
 
         {/* MOBILE SHEET NAVIGATION */}
         <Sheet open={openMobileSheet} onOpenChange={setOpenMobileSheet}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6" color="black"/>
               <span className="sr-only">Toggle header menu</span>
             </Button>
           </SheetTrigger>

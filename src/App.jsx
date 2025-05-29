@@ -99,22 +99,6 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
         </Route>
 
-
-        {/* <Route
-          path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="home" element={<ShoppingHome />} />
-          <Route path="listing" element={<ShoppingListing />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="paystack-return" element={<PaystackReturnPage />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
-        </Route> */}
         <Route path="/search" element={<SearchProducts />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/unauth-page" element={<UnauthPage />} />

@@ -139,10 +139,10 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen ">
-      <div className="relative w-full flex flex-col md:flex-row items-center justify-between py-12 px-16 md:px-28 bg-gray-200 rounded-lg shadow-lg">
+      <div className="relative w-full flex flex-col md:flex-row items-center justify-between py-12 px-16 md:px-28 rounded-lg shadow-lg">
         {/* Text Section */}
         <div className=" space-y-4 text-center md:text-left">
-          <h1 className="text-3xl md:text-5xl 2xl:text-[3.8rem] font-bold text-gray-900 max-w-xl md:leading-[50px] 2xl:leading-[70px]">
+          <h1 className="text-3xl md:text-5xl 2xl:text-[3.8rem] font-bold text-[#78b627]  max-w-xl md:leading-[50px] 2xl:leading-[70px]">
             {featureImageList[currentSlide].title}
           </h1>
           <p className="text-lg text-gray-700">
@@ -195,7 +195,7 @@ function ShoppingHome() {
         </Button>
       </div>
       {/* CATEGORY */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-12">
           <h2 className="text-3xl font-bold text-center mb-8">
             Shop by Category

@@ -13,17 +13,17 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Shop</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="/shop/listing?category=men" className="text-gray-400 hover:text-white transition">
                 Men
               </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="/shop/listing?category=women" className="text-gray-400 hover:text-white transition">
                 Women
               </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="/shop/listing?category=kids" className="text-gray-400 hover:text-white transition">
                 Kids
               </a>
             </li>
@@ -45,7 +45,7 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="/shop/account" className="text-gray-400 hover:text-white transition">
                 Order Tracking
               </a>
             </li>
