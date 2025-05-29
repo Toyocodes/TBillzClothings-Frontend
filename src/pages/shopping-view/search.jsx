@@ -1,3 +1,4 @@
+import ShoppingHeader from "@/components/shopping-view/header";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Input } from "@/components/ui/input";
@@ -141,83 +142,90 @@ function SearchProducts() {
   }, [productDetails]);
 
   return (
-     <div className="container mx-auto px-4 md:px-6 py-12">
-      <div className="mb-7 mt-12 flex justify-center items-center">
-        <a href="/" className="text-sm font-bold flex items-center hover:text-[#82e600]">
-          <p> Go Back to Home</p>
-          <ArrowRight className="ml-2" />
-        </a>
+    <div>
+      <div>
+        <ShoppingHeader />
       </div>
-    <div >
-     
-      {/* Search Bar */}
-      <div className="flex justify-center mb-10">
-        <div className="w-full max-w-2xl">
-          <Input
-            value={keyword}
-            name="keyword"
-            onChange={(event) => setKeyword(event.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setHasSearched(true);
-              }
-            }}
-            className="py-5 px-6 rounded-2xl shadow-sm focus:ring-2 focus:ring-primary focus:outline-none text-base"
-            placeholder="🔍 Search for products..."
+      <div className="container mx-auto px-4 md:px-6 py-12">
+        <div className="mb-7 mt-12 flex justify-center items-center">
+          <a
+            href="/"
+            className="text-sm font-bold flex items-center hover:text-[#82e600]"
+          >
+            <p> Go Back to Home</p>
+            <ArrowRight className="ml-2" />
+          </a>
+        </div>
+        <div>
+          {/* Search Bar */}
+          <div className="flex justify-center mb-10">
+            <div className="w-full max-w-2xl">
+              <Input
+                value={keyword}
+                name="keyword"
+                onChange={(event) => setKeyword(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setHasSearched(true);
+                  }
+                }}
+                className="py-5 px-6 rounded-2xl shadow-sm focus:ring-2 focus:ring-primary focus:outline-none text-base"
+                placeholder="🔍 Search for products..."
+              />
+            </div>
+          </div>
+
+          {/* Initial Prompt */}
+          {!hasSearched && !keyword && (
+            <div className="text-center py-12">
+              <h2 className="text-3xl font-semibold text-gray-700 mb-4">
+                What are you looking for today? 🛍️
+              </h2>
+              <p className="text-gray-500">
+                Type a keyword and hit Enter to begin.
+              </p>
+            </div>
+          )}
+
+          {/* No Results Found */}
+          {hasSearched && keyword && !searchResults.length && (
+            <div className="text-center py-16">
+              <h2 className="text-4xl font-bold text-gray-700 mb-4">
+                No results found 😔
+              </h2>
+              <p className="text-gray-500">
+                Try searching with different keywords.
+              </p>
+            </div>
+          )}
+
+          {/* Search Results */}
+          {!!searchResults.length && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {searchResults.map((item) => (
+                <div
+                  key={item.id}
+                  className="transform transition duration-300 hover:scale-[1.02]"
+                >
+                  <ShoppingProductTile
+                    handleAddtoCart={handleAddtoCart}
+                    product={item}
+                    handleGetProductDetails={handleGetProductDetails}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Product Details Modal */}
+          <ProductDetailsDialog
+            open={openDetailsDialog}
+            setOpen={setOpenDetailsDialog}
+            productDetails={productDetails}
           />
         </div>
       </div>
-
-      {/* Initial Prompt */}
-      {!hasSearched && !keyword && (
-        <div className="text-center py-12">
-          <h2 className="text-3xl font-semibold text-gray-700 mb-4">
-            What are you looking for today? 🛍️
-          </h2>
-          <p className="text-gray-500">
-            Type a keyword and hit Enter to begin.
-          </p>
-        </div>
-      )}
-
-      {/* No Results Found */}
-      {hasSearched && keyword && !searchResults.length && (
-        <div className="text-center py-16">
-          <h2 className="text-4xl font-bold text-gray-700 mb-4">
-            No results found 😔
-          </h2>
-          <p className="text-gray-500">
-            Try searching with different keywords.
-          </p>
-        </div>
-      )}
-
-      {/* Search Results */}
-      {!!searchResults.length && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {searchResults.map((item) => (
-            <div
-              key={item.id}
-              className="transform transition duration-300 hover:scale-[1.02]"
-            >
-              <ShoppingProductTile
-                handleAddtoCart={handleAddtoCart}
-                product={item}
-                handleGetProductDetails={handleGetProductDetails}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Product Details Modal */}
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
-     </div>
   );
 }
 

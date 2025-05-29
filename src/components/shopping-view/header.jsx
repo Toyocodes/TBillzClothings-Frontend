@@ -39,10 +39,13 @@ import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 
-function MenuItems() {
+function MenuItems({ closeSheet }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Parse query params
+  const searchParams = new URLSearchParams(location.search);
+  const currentCategory = searchParams.get("category");
 
   function handleNavigate(getCurrentMenuItem) {
     sessionStorage.removeItem("filters");
@@ -57,20 +60,45 @@ function MenuItems() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
+    if (location.pathname.includes("listing") && currentFilter !== null) {
+      // Set query param for category
+      navigate(`/shop/listing?category=${getCurrentMenuItem.id}`);
+    } else {
+      navigate(getCurrentMenuItem.path);
+    }
+
+    if (closeSheet) closeSheet(); // Close the mobile sheet
+  }
+
+  // Determine if menu item is active
+  function isActive(menuItem) {
+    if (menuItem.id === "home" || menuItem.id === "search") {
+      // Check pathname directly for unique paths
+      return location.pathname === menuItem.path;
+    }
+
+    // For products and category items, check if pathname is /shop/listing
+    // AND category query param matches the menu item's id
+    if (location.pathname === "/shop/listing") {
+      if (menuItem.id === "products") {
+        // "Products" menu is active if no category param is set
+        return currentCategory === null;
+      }
+      return currentCategory === menuItem.id;
+    }
+
+    return false;
   }
 
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
         <Label
-          onClick={() => handleNavigate(menuItem)}
-          className="text-sm font-medium cursor-pointer"
           key={menuItem.id}
+          onClick={() => handleNavigate(menuItem)}
+          className={`text-sm font-medium cursor-pointer transition-colors ${
+            isActive(menuItem) ? "text-[#82e600] font-bold" : ""
+          }`}
         >
           {menuItem.label}
         </Label>
@@ -78,6 +106,7 @@ function MenuItems() {
     </nav>
   );
 }
+
 
 function HeaderRightContent() {
   const { user } = useSelector((state) => state.auth);
@@ -162,15 +191,18 @@ function HeaderRightContent() {
 
 function ShoppingHeader() {
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [openMobileSheet, setOpenMobileSheet] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-12 md:px-28">
+      <div className="flex h-16 items-center justify-between px-6 md:px-28">
         <Link to="/shop/home" className="flex items-center gap-2">
           <ShoppingBagIcon className="h-6 w-6" />
           <span className="font-bold">TBillzStore</span>
         </Link>
-        <Sheet>
+
+        {/* MOBILE SHEET NAVIGATION */}
+        <Sheet open={openMobileSheet} onOpenChange={setOpenMobileSheet}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
               <Menu className="h-6 w-6" />
@@ -178,14 +210,15 @@ function ShoppingHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
+            <MenuItems closeSheet={() => setOpenMobileSheet(false)} />
             <HeaderRightContent />
           </SheetContent>
         </Sheet>
+
+        {/* DESKTOP NAVIGATION */}
         <div className="hidden lg:block">
           <MenuItems />
         </div>
-
         <div className="hidden lg:block">
           <HeaderRightContent />
         </div>
@@ -193,5 +226,4 @@ function ShoppingHeader() {
     </header>
   );
 }
-``;
 export default ShoppingHeader;
