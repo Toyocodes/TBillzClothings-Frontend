@@ -10,7 +10,7 @@ function PaymentSuccessPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <Card className="w-full max-w-md p-8 shadow-xl rounded-2xl bg-white text-center animate-fade-in">
         <CardHeader className="flex flex-col items-center gap-4">
-          <CheckCircle className="text-[#78b627]" size={64} />
+          <CheckCircle className="text-[#82e600]" size={64} />
           <CardTitle className="text-3xl font-semibold">
             Payment Successful!
           </CardTitle>
@@ -19,7 +19,7 @@ function PaymentSuccessPage() {
           Thank you for your purchase. Your order has been confirmed.
         </p>
         <Button
-          className="bg-[#78b627] hover:bg-[#6aa021] transition-colors w-full"
+          className="bg-[#82e600] hover:bg-[#6aa021] transition-colors w-full"
           onClick={() => navigate("/shop/account")}
         >
           View My Orders

@@ -23,6 +23,7 @@ import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import { BallTriangle } from "react-loader-spinner";
 import Wishlist from "./pages/shopping-view/wishlist";
+import FAQPage from "./pages/shopping-view/faq";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -51,7 +52,7 @@ function App() {
     );
 
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-white font-serif">
       <Routes>
         <Route path="/" element={<Navigate to="/shop/home" />} />
 
@@ -82,6 +83,7 @@ function App() {
         <Route path="/shop" element={<ShoppingLayout />}>
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="faq" element={<FAQPage />} />
         </Route>
 
         {/* Protected SHOP Pages - require auth */}

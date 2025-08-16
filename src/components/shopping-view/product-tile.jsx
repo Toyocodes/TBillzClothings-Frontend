@@ -10,13 +10,13 @@ function ShoppingProductTile({
   handleAddtoCart,
 }) {
   return (
-      <Card className="w-full max-w-sm mx-auto rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 bg-white">
+      <Card className="w-full max-w-sm mx-auto transition-shadow duration-300 ">
       <div onClick={() => handleGetProductDetails(product?._id)} className="cursor-pointer">
         <div className="relative">
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-2xl transition-transform duration-300 hover:scale-105"
+            className="w-full h-[300px] object-cover  transition-transform duration-300"
           />
 
           {/* ⭐ Rating badge */}
@@ -44,7 +44,7 @@ function ShoppingProductTile({
         </div>
 
         <CardContent className="px-5 py-4 space-y-1.5">
-          <h2 className="text-xl font-semibold text-gray-900 line-clamp-1 hover:text-primary transition-colors">
+          <h2 className="text-lg font-semibold text-gray-900 line-clamp-1 hover:text-primary transition-colors">
             {product?.title}
           </h2>
           <div className="flex justify-between text-sm text-muted-foreground">
@@ -52,7 +52,7 @@ function ShoppingProductTile({
             <span>{brandOptionsMap[product?.brand]}</span>
           </div>
 
-          <div className="flex justify-between items-center pt-2">
+          <div className="flex justify-between items-center">
             <span
               className={`${
                 product?.salePrice > 0 ? "line-through text-gray-400" : "text-primary"
@@ -69,15 +69,15 @@ function ShoppingProductTile({
         </CardContent>
       </div>
 
-      <CardFooter className="px-5 pb-4">
+      <CardFooter className="flex justify-center items-center  px-5 pb-4">
         {product?.totalStock === 0 ? (
-          <Button className="w-full opacity-60 cursor-not-allowed" disabled>
+          <Button className="rounded-3xl opacity-60 cursor-not-allowed" disabled>
             Out Of Stock
           </Button>
         ) : (
           <Button
             onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
-            className="w-full bg-[#6cc000] py-6 hover:bg-primary/90 transition-colors"
+            className="rounded-3xl hover:scale-95 py-5 bg-primary/90 transition-colors ease-in-out"
           >
             Add to Cart
           </Button>

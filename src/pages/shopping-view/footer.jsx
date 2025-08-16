@@ -3,7 +3,7 @@ import { FiSend } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="relative bg-black text-white py-12 md:px-24 px-12 mt-12">
+    <footer className="relative bg-black text-white py-12 md:px-8 lg:px-24 px-8 mt-16">
       {/* Curved Top Border */}
       <div className="absolute top-0 left-0 w-full h-10 bg-black -translate-y-1/2 rounded-t-[50%]"></div>
 
@@ -11,7 +11,7 @@ export default function Footer() {
         {/* SHOP LINKS */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Shop</h3>
-          <ul className="space-y-2">
+          {/* <ul className="space-y-2">
             <li>
               <a href="/shop/listing?category=men" className="text-gray-400 hover:text-white transition">
                 Men
@@ -27,6 +27,56 @@ export default function Footer() {
                 Kids
               </a>
             </li>
+          </ul> */}
+          <ul className="space-y-2">
+            <li>
+              <a
+                href="/shop/listing?category=headphones"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Headphones
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shop/listing?category=airpods"
+                className="text-gray-400 hover:text-white transition"
+              >
+                AirPods
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shop/listing?category=powerbanks"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Power Banks
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shop/listing?category=phones"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Phones
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shop/listing?category=smartwatch"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Smartwatch
+              </a>
+            </li>
+            <li>
+              <a
+                href="/shop/listing?category=laptop"
+                className="text-gray-400 hover:text-white transition"
+              >
+                Laptop
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -35,17 +85,20 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="/shop/faq" className="text-gray-400 hover:text-white transition">
                 FAQs
               </a>
             </li>
-            <li>
+            {/* <li>
               <a href="#" className="text-gray-400 hover:text-white transition">
                 Returns & Exchanges
               </a>
-            </li>
+            </li> */}
             <li>
-              <a href="/shop/account" className="text-gray-400 hover:text-white transition">
+              <a
+                href="/shop/account"
+                className="text-gray-400 hover:text-white transition"
+              >
                 Order Tracking
               </a>
             </li>
@@ -83,7 +136,7 @@ export default function Footer() {
               placeholder="Enter your email"
               className="w-full bg-gray-800 text-white px-4 py-2 rounded-md outline-none"
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 p-2 rounded-md">
+            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#82e600] p-2 rounded-md">
               <FiSend size={16} className="text-white" />
             </button>
           </div>
@@ -92,7 +145,7 @@ export default function Footer() {
 
       {/* COPYRIGHT */}
       <div className="mt-10 text-center text-gray-500 text-sm">
-        © {new Date().getFullYear()} TBillzStore. All rights reserved.
+        © {new Date().getFullYear()} TGadgets'n'more. All rights reserved.
       </div>
     </footer>
   );

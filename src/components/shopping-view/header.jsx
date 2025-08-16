@@ -52,6 +52,7 @@ function MenuItems({ closeSheet }) {
     const currentFilter =
       getCurrentMenuItem.id !== "home" &&
       getCurrentMenuItem.id !== "products" &&
+      getCurrentMenuItem.id !== "faq" &&
       getCurrentMenuItem.id !== "search"
         ? {
             category: [getCurrentMenuItem.id],
@@ -72,7 +73,7 @@ function MenuItems({ closeSheet }) {
 
   // Determine if menu item is active
   function isActive(menuItem) {
-    if (menuItem.id === "home" || menuItem.id === "search") {
+    if (menuItem.id === "home" || menuItem.id === "faq" || menuItem.id === "search") {
       // Check pathname directly for unique paths
       return location.pathname === menuItem.path;
     }
@@ -91,12 +92,12 @@ function MenuItems({ closeSheet }) {
   }
 
   return (
-    <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
+    <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-12 lg:flex-row">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
         <Label
           key={menuItem.id}
           onClick={() => handleNavigate(menuItem)}
-          className={`text-sm font-medium cursor-pointer transition-colors ${
+          className={`text-lg font-medium cursor-pointer transition-colors ${
             isActive(menuItem) ? "text-[#82e600] font-bold" : ""
           }`}
         >
@@ -156,7 +157,7 @@ function HeaderRightContent() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="bg-[#82e600] text-white cursor-pointer">
-              <AvatarFallback className="bg-[#93d43e] text-white font-extrabold">
+              <AvatarFallback className="bg-[#82e600] text-white font-extrabold">
                 {user.userName[0].toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -194,11 +195,11 @@ function ShoppingHeader() {
   const [openMobileSheet, setOpenMobileSheet] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-black text-white py-4">
+    <header className="sticky top-0 z-40 w-full bg-[#1d1d1d]  text-white py-4 ">
       <div className="flex h-16 items-center justify-between px-12 md:px-28">
-        <Link to="/shop/home" className="flex items-center gap-2 text-3xl">
+        <Link to="/shop/home" className="flex items-center gap-2 text-2xl">
           <ShoppingBagIcon className="h-6 w-6" color="#82e600"/>
-          <span className="font-bold text-[#82e600]">TBillzStore</span>
+          <span className="font-extrabold text-[#82e600]">TGadgets'n'more</span>
         </Link>
 
         {/* MOBILE SHEET NAVIGATION */}
