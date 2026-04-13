@@ -199,7 +199,7 @@ function ShoppingHeader() {
       <div className="flex h-16 items-center justify-between px-12 md:px-28">
         <Link to="/shop/home" className="flex items-center gap-2 text-2xl">
           <ShoppingBagIcon className="h-6 w-6" color="#82e600"/>
-          <span className="font-extrabold text-[#82e600]">TGadgets'n'more</span>
+          <span className="font-extrabold text-[#82e600]">Tmobilestore</span>
         </Link>
 
         {/* MOBILE SHEET NAVIGATION */}
