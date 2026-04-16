@@ -11,32 +11,50 @@ export const registerUser = createAsyncThunk(
   "/auth/register",
 
   async (formData) => {
-    const response = await axios.post(
-      "/auth/register",
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.post("/auth/register", formData, {
+      withCredentials: true,
+    });
 
     return response.data;
-  }
+  },
 );
 
 export const loginUser = createAsyncThunk(
   "/auth/login",
 
   async (formData) => {
+    const response = await axios.post("/auth/login", formData, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  },
+);
+
+export const forgotPassword = createAsyncThunk(
+  "/auth/forgot-password",
+  async (email) => {
     const response = await axios.post(
-      "/auth/login",
-      formData,
-      {
-        withCredentials: true,
-      }
+      "/auth/forgot-password",
+      { email },
+      { withCredentials: true },
     );
 
     return response.data;
-  }
+  },
+);
+
+export const resetPassword = createAsyncThunk(
+  "/auth/reset-password",
+  async ({ token, password }) => {
+    const response = await axios.put(
+      `/auth/reset-password/${token}`,
+      { password },
+      { withCredentials: true },
+    );
+
+    return response.data;
+  },
 );
 
 export const logoutUser = createAsyncThunk(
@@ -48,39 +66,37 @@ export const logoutUser = createAsyncThunk(
       {},
       {
         withCredentials: true,
-      }
+      },
     );
 
     return response.data;
-  }
+  },
 );
 
 export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
   async () => {
-    const response = await axios.get(
-      "/auth/check-auth",
-      {
-        withCredentials: true,
-        headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
-        },
-      }
-    );
+    const response = await axios.get("/auth/check-auth", {
+      withCredentials: true,
+      headers: {
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+      },
+    });
 
     return response.data;
-  }
+  },
 );
 
+//REDUCERS and extra reducers for handling the state changes based on the async thunks
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     // setUser: (state, action) => {},
     setUser: (state, action) => {
-      state.user = action.payload;  // Set the user data directly
+      state.user = action.payload; // Set the user data directly
       state.isAuthenticated = true;
       state.isLoading = false;
     },
@@ -104,7 +120,6 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-
         state.isLoading = false;
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;
@@ -131,6 +146,24 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(forgotPassword.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(resetPassword.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });

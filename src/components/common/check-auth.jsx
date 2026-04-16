@@ -20,11 +20,24 @@ function CheckAuth({ isAuthenticated, user, children }) {
     !(
       location.pathname.includes("/login") ||
       location.pathname.includes("/register") ||
+      location.pathname.includes("/forgot-password") || // ✅ add this
+      location.pathname.includes("/reset-password") || // ✅ add this
       location.pathname.includes("/shop/home")
     )
   ) {
     return <Navigate to="/auth/login" />;
   }
+
+  // if (
+  //   !isAuthenticated &&
+  //   !(
+  //     location.pathname.includes("/login") ||
+  //     location.pathname.includes("/register") ||
+  //     location.pathname.includes("/shop/home")
+  //   )
+  // ) {
+  //   return <Navigate to="/auth/login" />;
+  // }
 
   if (
     isAuthenticated &&
@@ -58,4 +71,3 @@ function CheckAuth({ isAuthenticated, user, children }) {
 }
 
 export default CheckAuth;
-

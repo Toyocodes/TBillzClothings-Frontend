@@ -37,7 +37,10 @@ function AuthLogin() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="my-4 flex justify-center items-center">
-        <a href="/" className="font-bold flex items-center hover:text-[#82e600]">
+        <a
+          href="/"
+          className="font-bold flex items-center hover:text-[#82e600]"
+        >
           <p> Go Back to Home</p>
           <ArrowRight className="ml-2" />
         </a>
@@ -63,6 +66,14 @@ function AuthLogin() {
         setFormData={setFormData}
         onSubmit={onSubmit}
       />
+      <div className="text-sm text-center">
+        <Link
+          to="/auth/forgot-password"
+          className="font-medium text-primary hover:underline"
+        >
+          Forgot your password?
+        </Link>
+      </div>
     </div>
   );
 }
