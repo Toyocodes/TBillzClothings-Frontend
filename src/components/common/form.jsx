@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import {
@@ -19,29 +21,48 @@ function CommonForm({
   buttonText,
   isBtnDisabled,
 }) {
+  const [showPassword, setShowPassword] = useState({});
   function renderInputsByComponentType(getControlItem) {
     let element = null;
     const value = formData[getControlItem.name] || "";
 
     switch (getControlItem.componentType) {
       case "input":
-        element = (
-          <Input
-            name={getControlItem.name}
-            placeholder={getControlItem.placeholder}
-            id={getControlItem.name}
-            type={getControlItem.type}
-            value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
-          />
-        );
+  const isPassword = getControlItem.type === "password";
+  const isVisible = showPassword[getControlItem.name];
 
-        break;
+  element = (
+    <div className="relative">
+      <Input
+        name={getControlItem.name}
+        placeholder={getControlItem.placeholder}
+        id={getControlItem.name}
+        type={isPassword && isVisible ? "text" : getControlItem.type}
+        value={value}
+        onChange={(event) =>
+          setFormData({
+            ...formData,
+            [getControlItem.name]: event.target.value,
+          })
+        }
+      />
+
+      {isPassword && (
+        <span
+          onClick={() =>
+            setShowPassword((prev) => ({
+              ...prev,
+              [getControlItem.name]: !prev[getControlItem.name],
+            }))
+          }
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+        >
+          {isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+        </span>
+      )}
+    </div>
+  );
+  break;
       case "select":
         element = (
           <Select

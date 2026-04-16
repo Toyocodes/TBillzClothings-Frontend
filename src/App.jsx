@@ -24,10 +24,12 @@ import SearchProducts from "./pages/shopping-view/search";
 import { BallTriangle } from "react-loader-spinner";
 import Wishlist from "./pages/shopping-view/wishlist";
 import FAQPage from "./pages/shopping-view/faq";
+import ForgotPassword from "./pages/auth/forgot-password";
+import ResetPassword from "./pages/auth/reset-password";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
   const dispatch = useDispatch();
 
@@ -56,6 +58,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/shop/home" />} />
 
+        {/* Public Auth Pages */}
         <Route
           path="/auth"
           element={
@@ -66,7 +69,10 @@ function App() {
         >
           <Route path="login" element={<AuthLogin />} />
           <Route path="register" element={<AuthRegister />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password/:token" element={<ResetPassword />} />
         </Route>
+
         <Route
           path="/admin"
           element={
