@@ -46,15 +46,18 @@ export const forgotPassword = createAsyncThunk(
 
 export const resetPassword = createAsyncThunk(
   "/auth/reset-password",
-  async ({ token, password }) => {
-    const response = await axios.put(
-      `/auth/reset-password/${token}`,
-      { password },
-      { withCredentials: true },
-    );
-
-    return response.data;
-  },
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `/auth/reset-password/${token}`,
+        { password },
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
 );
 
 export const logoutUser = createAsyncThunk(
