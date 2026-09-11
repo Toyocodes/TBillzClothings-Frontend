@@ -109,13 +109,15 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     dispatch(fetchAllAddresses(user?.id));
   }, [dispatch]);
 
-  console.log(addressList, "addressList");
-
   return (
-    <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2  gap-2">
-        {addressList && addressList.length > 0
-          ? addressList.map((singleAddressItem) => (
+    <Card className="rounded-2xl border-border bg-card">
+      <CardHeader className="pb-3">
+        <CardTitle className="font-display text-base">Delivery Address</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {addressList && addressList.length > 0 ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {addressList.map((singleAddressItem) => (
               <AddressCard
                 key={singleAddressItem._id}
                 selectedId={selectedId}
@@ -124,23 +126,27 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
                 handleEditAddress={handleEditAddress}
                 setCurrentSelectedAddress={setCurrentSelectedAddress}
               />
-            ))
-          : null}
-      </div>
-      <CardHeader>
-        <CardTitle>
-          {currentEditedId !== null ? "Edit Address" : "Add New Address"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <CommonForm
-          formControls={addressFormControls}
-          formData={formData}
-          setFormData={setFormData}
-          buttonText={currentEditedId !== null ? "Edit" : "Add"}
-          onSubmit={handleManageAddress}
-          isBtnDisabled={!isFormValid()}
-        />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            You have no saved addresses yet &mdash; add one below.
+          </p>
+        )}
+
+        <div className="space-y-3 border-t border-border pt-5">
+          <h3 className="font-display text-sm font-bold text-foreground">
+            {currentEditedId !== null ? "Edit Address" : "Add New Address"}
+          </h3>
+          <CommonForm
+            formControls={addressFormControls}
+            formData={formData}
+            setFormData={setFormData}
+            buttonText={currentEditedId !== null ? "Save Changes" : "Add Address"}
+            onSubmit={handleManageAddress}
+            isBtnDisabled={!isFormValid()}
+          />
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,11 +1,12 @@
 import Address from "@/components/shopping-view/address";
-import img from "../../assets/account.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
 import { Button } from "@/components/ui/button";
+import Spinner from "@/components/common/spinner";
 import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
 import { useToast } from "@/components/ui/use-toast";
+import { CreditCard, ShieldCheck } from "lucide-react";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -43,13 +44,13 @@ function ShoppingCheckout() {
       callback: function (response) {
         // Payment complete; redirect to our verification callback page
         window.location.href = `/shop/paystack-return?reference=${response.reference}`;
-      }, 
+      },
       onClose: function () {
+        setIsPaymentStart(false);
         toast({ title: "Payment was cancelled", variant: "destructive" });
-      }, 
+      },
     });
-    handler.openIframe(); console.log("Paystack Public Key:", import.meta.env.VITE_PAYSTACK_PUBLIC_KEY);
-
+    handler.openIframe();
   }
 
   function handleInitiatePaystackPayment() {
@@ -110,31 +111,59 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="relative h-[300px] w-full overflow-hidden">
-        <img src={img} className="h-full w-full object-cover object-center" />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
+    <div className="mx-auto max-w-[1200px] px-5 py-8 md:px-10 md:py-10">
+      <h1 className="mb-6 font-display text-2xl font-bold text-foreground md:text-3xl">
+        Checkout
+      </h1>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_400px] lg:items-start">
         <Address
           selectedId={currentSelectedAddress}
           setCurrentSelectedAddress={setCurrentSelectedAddress}
         />
-        <div className="flex flex-col gap-4">
-          {cartItems && cartItems.items && cartItems.items.length > 0
-            ? cartItems.items.map((item) => (
+
+        <div className="space-y-4 rounded-2xl border border-border bg-card p-5 lg:sticky lg:top-24">
+          <h2 className="font-display text-base font-bold text-foreground">Order Summary</h2>
+
+          <div className="max-h-[340px] space-y-4 overflow-y-auto pr-1">
+            {cartItems && cartItems.items && cartItems.items.length > 0 ? (
+              cartItems.items.map((item) => (
                 <UserCartItemsContent key={item.productId} cartItem={item} />
               ))
-            : null}
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between">
-              <span className="font-bold">Total</span>
-              <span className="font-bold">₦{totalCartAmount}</span>
+            ) : (
+              <p className="text-sm text-muted-foreground">Your cart is empty.</p>
+            )}
+          </div>
+
+          <div className="space-y-2 border-t border-border pt-4">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm font-semibold text-muted-foreground">Total</span>
+              <span className="font-display text-xl font-bold text-foreground">
+                ₦{totalCartAmount.toLocaleString()}
+              </span>
             </div>
           </div>
-          <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaystackPayment} className="w-full">
-              {isPaymentStart ? "Processing Payment..." : "Checkout with Paystack"}
-            </Button>
+
+          <Button
+            onClick={handleInitiatePaystackPayment}
+            disabled={isPaymentStart}
+            className="w-full gap-2 rounded-2xl bg-gradient-brand py-6 text-sm font-bold text-white shadow-[0_10px_30px_-8px_hsl(var(--primary)/0.55)] hover:opacity-90"
+          >
+            {isPaymentStart ? (
+              <>
+                <Spinner />
+                Processing Payment&hellip;
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4" />
+                Checkout with Paystack
+              </>
+            )}
+          </Button>
+
+          <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Secure payment powered by Paystack
           </div>
         </div>
       </div>

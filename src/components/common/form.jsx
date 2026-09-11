@@ -12,6 +12,7 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
+import Spinner from "./spinner";
 
 function CommonForm({
   formControls,
@@ -20,6 +21,7 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
+  isLoading,
 }) {
   const [showPassword, setShowPassword] = useState({});
   function renderInputsByComponentType(getControlItem) {
@@ -140,7 +142,12 @@ function CommonForm({
           </div>
         ))}
       </div>
-      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
+      <Button
+        disabled={isBtnDisabled || isLoading}
+        type="submit"
+        className="mt-2 w-full gap-2 rounded-xl"
+      >
+        {isLoading && <Spinner />}
         {buttonText || "Submit"}
       </Button>
     </form>

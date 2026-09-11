@@ -3,7 +3,11 @@ import axios from "../../lib/axios";
 
 const initialState = {
   isAuthenticated: false,
-  isLoading: true,
+  // isLoading tracks in-flight auth actions (login/register/forgot/reset) so
+  // buttons can show a spinner. isCheckingAuth tracks only the one-time
+  // session check on app load, so it never blocks public pages.
+  isLoading: false,
+  isCheckingAuth: true,
   user: null,
 };
 
@@ -98,7 +102,7 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload; // Set the user data directly
       state.isAuthenticated = true;
-      state.isLoading = false;
+      state.isCheckingAuth = false;
     },
   },
   extraReducers: (builder) => {
@@ -130,15 +134,15 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(checkAuth.pending, (state) => {
-        state.isLoading = true;
+        state.isCheckingAuth = true;
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isCheckingAuth = false;
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;
       })
       .addCase(checkAuth.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isCheckingAuth = false;
         state.user = null;
         state.isAuthenticated = false;
       })

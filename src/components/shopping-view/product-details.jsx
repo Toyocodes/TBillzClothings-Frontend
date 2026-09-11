@@ -1,4 +1,4 @@
-import { HeartIcon, StarIcon } from "lucide-react";
+import { HeartIcon, ShoppingCart } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
@@ -17,6 +17,7 @@ import StarRatingComponent from "../common/star-rating";
 import { useEffect, useState } from "react";
 import { addReview, getReviews } from "@/store/shop/review-slice";
 import { addToWishlist, removeFromWishlist } from "@/store/shop/wishlist-slice";
+import { brandOptionsMap, categoryOptionsMap } from "@/config";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
@@ -157,78 +158,103 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         .catch((err) => toast({ title: err.message, variant: "destructive" }));
     }
   }
+  const hasSale = productDetails?.salePrice > 0;
+  const percentOff = hasSale
+    ? Math.round((1 - productDetails.salePrice / productDetails.price) * 100)
+    : 0;
+  const inStock = productDetails?.totalStock > 0;
+
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[80vw] p-4 sm:p-6 md:p-10">
-        <div className="w-full flex flex-col md:flex-row gap-8">
+      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-[28px] border-border bg-card p-4 sm:max-w-[95vw] sm:p-6 md:max-w-[90vw] md:p-10 lg:max-w-[80vw]">
+        <div className="flex w-full flex-col gap-10 md:flex-row">
           {/* Product image */}
-          <div className="w-full flex justify-center md:block md:w-1/2">
-            <div className="relative overflow-hidden rounded-lg w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] md:w-full md:h-full">
+          <div className="relative mx-auto w-full max-w-[420px] md:w-1/2 md:max-w-none">
+            <div className="pointer-events-none absolute -right-6 -top-6 h-40 w-40 rounded-full bg-primary/25 blur-[70px]" />
+            <div className="pointer-events-none absolute -bottom-6 -left-6 h-40 w-40 rounded-full bg-brand2/20 blur-[70px]" />
+            <div className="relative aspect-square w-full overflow-hidden rounded-[24px] border border-border bg-muted">
               <img
                 src={productDetails?.image}
                 alt={productDetails?.title}
-                className="aspect-square object-cover w-full h-full rounded-md"
+                className="h-full w-full object-cover"
               />
             </div>
           </div>
 
           {/* Product content */}
-          <div className="w-full md:w-1/2 flex flex-col justify-between">
+          <div className="flex w-full flex-col justify-between md:w-1/2">
             <div>
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl md:text-3xl font-extrabold">
+              <span className="text-xs font-bold uppercase tracking-wide text-primary">
+                {brandOptionsMap[productDetails?.brand]}
+                {productDetails?.category
+                  ? ` · ${categoryOptionsMap[productDetails?.category]}`
+                  : ""}
+              </span>
+
+              <div className="mt-1.5 flex items-start justify-between gap-4">
+                <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
                   {productDetails?.title}
                 </h1>
                 <button
                   onClick={handleWishlistToggle}
-                  className={`border-none hover:bg-transparent focus:outline-none focus:ring-0 rounded-full p-1 ${
-                    isInWishlist ? "fill-[#82e600]" : "bg-transparent"
-                  }`}
+                  className="flex-shrink-0 rounded-full border border-border bg-background p-2.5 transition-colors hover:border-primary/40"
                 >
                   <HeartIcon
-                    className="w-8 h-8"
-                    fill={isInWishlist ? "#82e600" : "none"}
-                    stroke={isInWishlist ? "#82e600" : "#4c7814"}
+                    className="h-5 w-5"
+                    fill={isInWishlist ? "hsl(var(--primary))" : "none"}
+                    stroke={isInWishlist ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"}
                   />
                 </button>
               </div>
 
-              <p className="text-muted-foreground text-base md:text-lg mb-5 mt-4">
-                {productDetails?.description}
-              </p>
-
-              <div className="flex gap-5">
-                <p
-                  className={`text-xl md:text-2xl font-bold text-primary ${
-                    productDetails?.salePrice > 0 ? "line-through " : ""
+              <div className="mt-3 flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <StarRatingComponent rating={averageReview} />
+                  <span className="ml-1 text-sm text-muted-foreground">
+                    {averageReview.toFixed(1)} ({reviews?.length || 0})
+                  </span>
+                </div>
+                <span className="h-3.5 w-px bg-border" />
+                <span
+                  className={`flex items-center gap-1.5 text-sm font-medium ${
+                    inStock ? "text-success" : "text-destructive"
                   }`}
                 >
-                  ₦{productDetails?.price}
-                </p>
-                {productDetails?.salePrice > 0 ? (
-                  <p className="text-xl md:text-2xl font-bold text-muted-foreground">
-                    ₦{productDetails?.salePrice}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="flex items-center gap-2 mt-2">
-                <div className="flex items-center gap-0.5">
-                  <StarRatingComponent rating={averageReview} />
-                </div>
-                <span className="text-muted-foreground">
-                  ({averageReview.toFixed(2)})
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${inStock ? "bg-success" : "bg-destructive"}`}
+                  />
+                  {inStock ? "In Stock" : "Out of Stock"}
                 </span>
               </div>
 
-              <div className="mt-5 mb-5">
-                {productDetails?.totalStock === 0 ? (
-                  <Button className="w-full opacity-60 cursor-not-allowed">
+              <div className="mt-4 flex items-center gap-3">
+                <p className="font-display text-2xl font-bold text-foreground md:text-3xl">
+                  ₦{(hasSale ? productDetails.salePrice : productDetails?.price)?.toLocaleString()}
+                </p>
+                {hasSale && (
+                  <>
+                    <p className="text-base text-muted-foreground line-through">
+                      ₦{productDetails?.price?.toLocaleString()}
+                    </p>
+                    <span className="rounded-full bg-success px-2.5 py-1 text-xs font-bold text-white">
+                      {percentOff}% OFF
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <p className="mb-5 mt-4 text-base leading-relaxed text-muted-foreground">
+                {productDetails?.description}
+              </p>
+
+              <div className="mb-5">
+                {!inStock ? (
+                  <Button className="w-full cursor-not-allowed rounded-2xl bg-secondary text-muted-foreground opacity-70">
                     Out of Stock
                   </Button>
                 ) : (
                   <Button
-                    className="w-full py-5 bg-[#6cc000] hover:bg-[#70a131] transition-colors"
+                    className="w-full gap-2 rounded-2xl bg-gradient-brand py-6 text-white shadow-[0_8px_28px_-8px_hsl(var(--primary)/0.55)] hover:opacity-90"
                     onClick={() =>
                       handleAddToCart(
                         productDetails?._id,
@@ -236,6 +262,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                       )
                     }
                   >
+                    <ShoppingCart className="h-4 w-4" />
                     Add to Cart
                   </Button>
                 )}
@@ -249,19 +276,21 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
             {/* Review Section */}
             <div className="max-h-[300px] overflow-auto">
-              <h2 className="text-lg md:text-xl font-bold mb-4">Reviews</h2>
+              <h2 className="font-display text-lg md:text-xl font-bold mb-4 text-foreground">
+                Reviews
+              </h2>
               <div className="grid gap-6">
                 {reviews && reviews.length > 0 ? (
                   reviews.map((reviewItem, i) => (
                     <div key={i} className="flex gap-4">
                       <Avatar className="w-10 h-10">
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-secondary text-secondary-foreground">
                           {reviewItem?.userName[0].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid gap-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold">{reviewItem?.userName}</h3>
+                          <h3 className="font-bold text-foreground">{reviewItem?.userName}</h3>
                         </div>
                         <div className="flex items-center gap-0.5">
                           <StarRatingComponent
@@ -292,10 +321,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                   value={reviewMsg}
                   onChange={(event) => setReviewMsg(event.target.value)}
                   placeholder="Write a review..."
+                  className="rounded-xl border-border bg-background"
                 />
                 <Button
                   onClick={handleAddReview}
                   disabled={reviewMsg.trim() === ""}
+                  className="rounded-xl"
                 >
                   Submit
                 </Button>

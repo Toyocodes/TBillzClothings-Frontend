@@ -4,7 +4,7 @@ import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const initialState = {
@@ -15,6 +15,7 @@ const initialState = {
 function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const { toast } = useToast();
 
   function onSubmit(event) {
@@ -36,23 +37,23 @@ function AuthLogin() {
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="my-4 flex justify-center items-center">
+      <div className="my-4 flex items-center justify-center">
         <a
           href="/"
-          className="font-bold flex items-center hover:text-[#82e600]"
+          className="flex items-center font-semibold text-muted-foreground transition-colors hover:text-primary"
         >
-          <p> Go Back to Home</p>
-          <ArrowRight className="ml-2" />
+          <p>Go Back to Home</p>
+          <ArrowRight className="ml-2 h-4 w-4" />
         </a>
       </div>
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Sign in to your account
         </h1>
-        <p className="mt-2">
-          Don't have an account
+        <p className="mt-2 text-muted-foreground">
+          Don&apos;t have an account?
           <Link
-            className="font-medium ml-2 text-primary hover:underline underline"
+            className="ml-2 font-medium text-primary hover:underline"
             to="/auth/register"
           >
             Register
@@ -65,6 +66,7 @@ function AuthLogin() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isLoading={isLoading}
       />
       <div className="text-sm text-center">
         <Link

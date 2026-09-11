@@ -17,18 +17,16 @@ import UnauthPage from "./pages/unauth-page";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
-import { Skeleton } from "@/components/ui/skeleton";
 import PaystackReturnPage from "./pages/shopping-view/paystack-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
-import { BallTriangle } from "react-loader-spinner";
 import Wishlist from "./pages/shopping-view/wishlist";
 import FAQPage from "./pages/shopping-view/faq";
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useSelector(
+  const { user, isAuthenticated, isCheckingAuth } = useSelector(
     (state) => state.auth,
   );
   const dispatch = useDispatch();
@@ -37,24 +35,8 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
-  if (isLoading)
-    return (
-      <div className="loader-container flex justify-center items-center h-screen">
-        <BallTriangle
-          height={100}
-          width={100}
-          radius={5}
-          color="#4fa94d"
-          ariaLabel="ball-triangle-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
-      </div>
-    );
-
   return (
-    <div className="flex flex-col overflow-hidden bg-white font-serif">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Routes>
         <Route path="/" element={<Navigate to="/shop/home" />} />
 
@@ -62,7 +44,11 @@ function App() {
         <Route
           path="/auth"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+              isCheckingAuth={isCheckingAuth}
+            >
               <AuthLayout />
             </CheckAuth>
           }
@@ -76,7 +62,11 @@ function App() {
         <Route
           path="/admin"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+              isCheckingAuth={isCheckingAuth}
+            >
               <AdminLayout />
             </CheckAuth>
           }
@@ -96,7 +86,11 @@ function App() {
         <Route
           path="/shop"
           element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+            <CheckAuth
+              isAuthenticated={isAuthenticated}
+              user={user}
+              isCheckingAuth={isCheckingAuth}
+            >
               <ShoppingLayout />
             </CheckAuth>
           }
