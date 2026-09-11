@@ -128,9 +128,9 @@ function ShoppingHome() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col bg-background">
       {/* HERO */}
-      <section className="relative overflow-hidden px-5 py-16 md:px-10 md:py-24 lg:px-12">
+      <section className="relative overflow-hidden px-5 py-16 md:px-10 md:py-24 xl:px-[8.5rem]">
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -138,7 +138,7 @@ function ShoppingHome() {
               "radial-gradient(1100px 560px at 12% -15%, hsl(var(--primary)/0.20), transparent 60%), radial-gradient(900px 520px at 92% 5%, hsl(var(--brand-2)/0.16), transparent 60%)",
           }}
         />
-        <div className="relative mx-auto flex max-w-[1344px] flex-col items-center gap-12 md:flex-row md:justify-between">
+        <div className="relative mx-auto flex flex-col items-center gap-12 md:flex-row md:justify-between">
           <div className="flex max-w-xl flex-col items-start gap-6 text-left">
             <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-semibold text-primary">
               New &middot; Fresh arrivals every week
@@ -167,12 +167,12 @@ function ShoppingHome() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[440px]">
+          <div className="relative w-full max-w-[440px]">
             {/* ambient glow, no flat background behind the image */}
             <div className="pointer-events-none absolute -right-10 -top-12 h-64 w-64 rounded-full bg-primary/25 blur-[90px]" />
             <div className="pointer-events-none absolute -bottom-12 -left-10 h-64 w-64 rounded-full bg-brand2/20 blur-[90px]" />
 
-            <div className="relative flex h-[380px] w-full items-center justify-center overflow-hidden rounded-[32px] md:h-[460px]">
+            <div className="relative flex h-[480px] w-full items-center justify-center overflow-hidden rounded-[32px] md:h-[460px]">
               {featureImageList.map((slide, index) => (
                 <img
                   key={slide.id}
@@ -185,7 +185,7 @@ function ShoppingHome() {
               ))}
 
               {/* glassmorphic floating chip */}
-              <div className="absolute inset-x-5 bottom-5 flex items-center gap-3 rounded-2xl bg-black/30 px-4 py-3 backdrop-blur-xl">
+              <div className="absolute inset-x-5 bottom-5 flex items-center gap-3 rounded-2xl bg-black/10 px-4 py-3 backdrop-blur-xl">
                 <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full  text-white">
                   {(() => {
                     const SlideIcon = featureImageList[currentSlide].icon;
@@ -224,7 +224,7 @@ function ShoppingHome() {
 
       {/* CATEGORY */}
       <section className="py-12 md:py-16">
-        <div className="container mx-auto px-5 md:px-12">
+        <div className="mx-auto max-w-[1344px] px-5 md:px-10 lg:px-12">
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground md:text-3xl">
             Shop by Category
           </h2>
@@ -251,7 +251,7 @@ function ShoppingHome() {
 
       {/* ALL PRODUCTS  */}
       <section className="py-8 md:py-12">
-        <div className="container mx-auto px-5 md:px-12">
+        <div className="mx-auto max-w-[1344px] px-5 md:px-10 lg:px-12">
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground md:text-3xl">
             Featured Products
           </h2>

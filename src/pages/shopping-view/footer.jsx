@@ -4,8 +4,8 @@ import { FiSend } from "react-icons/fi";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border bg-background px-6 py-14 md:px-10 lg:px-12">
-      <div className="mx-auto grid max-w-[1344px] grid-cols-1 gap-10 md:grid-cols-4">
+    <footer className="border-t border-border bg-background px-5 py-14 md:px-10 xl:px-[8.5rem]">
+      <div className="mx-auto grid max-w-[1344px] grid-cols-1 gap-10 lg:grid-cols-4">
         {/* BRAND */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2.5">

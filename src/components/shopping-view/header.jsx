@@ -218,7 +218,7 @@ function ShoppingHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-lg">
-      <div className="flex h-[76px] items-center justify-between gap-6 px-5 md:px-10 lg:px-12">
+      <div className="mx-auto flex h-[76px] max-w-[1344px] items-center justify-between gap-6 px-5 md:px-10 lg:px-12">
         <div className="flex items-center gap-9">
           <Link to="/shop/home" className="flex items-center gap-2.5">
             <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-gradient-brand">
@@ -230,7 +230,7 @@ function ShoppingHeader() {
           </Link>
 
           {/* DESKTOP NAVIGATION */}
-          <div className="hidden lg:block">
+          <div className="hidden xl:block">
             <MenuItems />
           </div>
         </div>
