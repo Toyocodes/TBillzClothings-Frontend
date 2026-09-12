@@ -1,5 +1,4 @@
 import ProductFilter from "@/components/shopping-view/filter";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +11,11 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { sortOptions } from "@/config";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon, ChevronDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -37,15 +33,13 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
-  );
+  const navigate = useNavigate();
+  const { productList } = useSelector((state) => state.shopProducts);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
 
   const categorySearchParam = searchParams.get("category");
@@ -77,7 +71,7 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
+    navigate(`/shop/product/${getCurrentProductId}`);
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
@@ -135,10 +129,6 @@ function ShoppingListing() {
       );
   }, [dispatch, sort, filters]);
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
-
   return (
     <div className="mx-auto grid max-w-[1344px] grid-cols-1 gap-8 px-5 py-8 md:grid-cols-[264px_1fr] md:px-10 md:py-10 lg:px-12">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
@@ -186,11 +176,6 @@ function ShoppingListing() {
             : null}
         </div>
       </div>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
   );
 }

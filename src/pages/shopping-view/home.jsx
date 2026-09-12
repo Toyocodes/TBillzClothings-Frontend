@@ -13,15 +13,11 @@ import {
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import Footer from "./footer";
 import CategorySection from "@/components/shopping-view/category-section-below";
 
@@ -36,9 +32,7 @@ const categoriesWithIcon = [
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
-  );
+  const { productList } = useSelector((state) => state.shopProducts);
 
   const featureImageList = [
     {
@@ -67,8 +61,6 @@ function ShoppingHome() {
     },
   ];
 
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
@@ -86,7 +78,7 @@ function ShoppingHome() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
+    navigate(`/shop/product/${getCurrentProductId}`);
   }
 
   function handleAddtoCart(getCurrentProductId) {
@@ -105,10 +97,6 @@ function ShoppingHome() {
       }
     });
   }
-
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -278,11 +266,6 @@ function ShoppingHome() {
       <section>
         <Footer />
       </section>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
   );
 }
