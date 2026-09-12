@@ -243,8 +243,8 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 )}
               </div>
 
-              <p className="mb-5 mt-4 text-base leading-relaxed text-muted-foreground">
-                {productDetails?.description}
+              <p className="mb-5 mt-4 text-base leading-relaxed">
+                {productDetails?.description} 
               </p>
 
               <div className="mb-5">

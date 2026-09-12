@@ -18,6 +18,7 @@ import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
+import Spinner from "@/components/common/spinner";
 import Footer from "./footer";
 import CategorySection from "@/components/shopping-view/category-section-below";
 
@@ -32,7 +33,9 @@ const categoriesWithIcon = [
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList } = useSelector((state) => state.shopProducts);
+  const { productList, isLoading: isProductsLoading } = useSelector(
+    (state) => state.shopProducts
+  );
 
   const featureImageList = [
     {
@@ -243,18 +246,29 @@ function ShoppingHome() {
           <h2 className="mb-8 text-center font-display text-2xl font-bold text-foreground md:text-3xl">
             Featured Products
           </h2>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {productList && productList.length > 0
-              ? productList.map((productItem) => (
-                  <ShoppingProductTile
-                    key={productItem?._id}
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                  />
-                ))
-              : null}
-          </div>
+          {isProductsLoading ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-20">
+              <Spinner className="h-7 w-7 text-primary" />
+              <p className="text-sm text-muted-foreground">Loading products&hellip;</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {productList && productList.length > 0
+                ? productList.map((productItem) => (
+                    <ShoppingProductTile
+                      key={productItem?._id}
+                      handleGetProductDetails={handleGetProductDetails}
+                      product={productItem}
+                      handleAddtoCart={handleAddtoCart}
+                    />
+                  ))
+                : (
+                    <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                      No products available right now.
+                    </p>
+                  )}
+            </div>
+          )}
         </div>
       </section>
 

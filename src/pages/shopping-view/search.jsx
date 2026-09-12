@@ -2,6 +2,7 @@ import ShoppingHeader from "@/components/shopping-view/header";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import Spinner from "@/components/common/spinner";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import {
   getSearchResults,
@@ -17,7 +18,9 @@ function SearchProducts() {
   const [, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { searchResults } = useSelector((state) => state.shopSearch);
+  const { searchResults, isLoading: isSearchLoading } = useSelector(
+    (state) => state.shopSearch
+  );
 
   const { user } = useSelector((state) => state.auth);
 
@@ -130,8 +133,16 @@ function SearchProducts() {
           </div>
         </div>
 
+        {/* Loading */}
+        {isSearchLoading && (
+          <div className="flex flex-col items-center justify-center gap-3 py-16">
+            <Spinner className="h-7 w-7 text-primary" />
+            <p className="text-sm text-muted-foreground">Loading products&hellip;</p>
+          </div>
+        )}
+
         {/* Initial Prompt */}
-        {!hasSearched && !keyword && (
+        {!isSearchLoading && !hasSearched && !keyword && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
               <SearchIcon className="h-6 w-6" />
@@ -146,7 +157,7 @@ function SearchProducts() {
         )}
 
         {/* No Results Found */}
-        {hasSearched && keyword && !searchResults.length && (
+        {!isSearchLoading && hasSearched && keyword && !searchResults.length && (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary text-muted-foreground">
               <SearchX className="h-6 w-6" />
@@ -161,7 +172,7 @@ function SearchProducts() {
         )}
 
         {/* Search Results */}
-        {!!searchResults.length && (
+        {!isSearchLoading && !!searchResults.length && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {searchResults.map((item) => (
               <ShoppingProductTile

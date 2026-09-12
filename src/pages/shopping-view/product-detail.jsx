@@ -35,16 +35,25 @@ import { addToWishlist, removeFromWishlist } from "@/store/shop/wishlist-slice";
 
 function formatDescriptionAsList(description) {
   if (!description) return [];
+
   const lines = description
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
   if (lines.length > 1) return lines;
 
-  return description
+  const text = lines[0] || description.trim();
+
+  const commaParts = text.split(",").map((part) => part.trim()).filter(Boolean);
+  if (commaParts.length > 1) return commaParts;
+
+  const sentenceParts = text
     .split(/(?<=[.!?])\s+/)
     .map((sentence) => sentence.trim())
     .filter(Boolean);
+  if (sentenceParts.length > 1) return sentenceParts;
+
+  return [text];
 }
 
 function ShoppingProductDetailPage() {
@@ -261,7 +270,7 @@ function ShoppingProductDetailPage() {
 
           <div className="mt-1.5 flex items-start justify-between gap-4">
             <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
-              {productDetails?.title}
+              {productDetails?.title} 
             </h1>
             <button
               onClick={handleWishlistToggle}
@@ -309,17 +318,6 @@ function ShoppingProductDetailPage() {
             )}
           </div>
 
-          {descriptionItems.length > 0 && (
-            <ul className="mb-2 mt-4 space-y-2">
-              {descriptionItems.map((item, index) => (
-                <li key={index} className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground">
-                  <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          )}
-
           {inStock && (
             <div className="mt-4 flex items-center gap-4">
               <div className="flex items-center gap-4 rounded-full border border-border px-2 py-1.5">
@@ -341,7 +339,7 @@ function ShoppingProductDetailPage() {
                   <Plus className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <span className="text-sm text-muted-foreground">
+              <span className="rounded-full bg-orange-400 px-2.5 py-1 text-xs font-bold text-white">
                 {productDetails?.totalStock} in stock
               </span>
             </div>
