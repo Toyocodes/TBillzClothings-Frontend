@@ -33,47 +33,47 @@ const WishlistCard = ({ product, onCardClick }) => {
 
   return (
     <Card
-      className="w-full mt-10 max-w-sm rounded-2xl border shadow-md overflow-hidden transition hover:shadow-xl relative cursor-pointer"
+      className="relative w-full cursor-pointer overflow-hidden rounded-2xl border-border bg-card transition-colors hover:border-primary/40"
       onClick={() => onCardClick(product)}
     >
-      <div
-        className="absolute top-3 right-5 z-10 p-1 bg-white rounded-full shadow-sm"
+      <button
+        className="absolute right-3 top-3 z-10 rounded-full bg-background/90 p-1.5 shadow-sm backdrop-blur"
         onClick={handleRemove}
       >
-        <Heart className="text-red-500 fill-red-500 w-6 h-6" />
-      </div>
+        <Heart className="h-5 w-5 fill-primary text-primary" />
+      </button>
 
-      <div className="relative flex items-center justify-center pt-6 bg-gray-50">
+      <div className="flex items-center justify-center bg-muted pt-6">
         <img
           src={product?.image}
           alt={product?.title}
-          className="h-44 w-44 object-cover rounded-t-2xl"
+          className="h-44 w-44 object-cover"
         />
       </div>
 
-      <CardContent className="p-6 space-y-1.5">
-        <h3 className="text-lg font-semibold text-gray-900 truncate hover:underline">
+      <CardContent className="space-y-1.5 p-5">
+        <h3 className="truncate font-display text-base font-semibold text-foreground">
           {product?.title}
         </h3>
 
-        <div className="flex gap-2 items-center text-lg text-muted-foreground">
-          {product?.averageReview?.toFixed(1) || "0.0"} 
-          <StarIcon className="w-5 h-5 fill-[#82e600] text-[#82e600]" /> 
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          {product?.averageReview?.toFixed(1) || "0.0"}
+          <StarIcon className="h-4 w-4 fill-primary text-primary" />
         </div>
 
-        <div className="flex items-center gap-y-3 gap-x-2 text-gray-800">
+        <div className="flex items-center gap-2">
           {product?.salePrice > 0 ? (
             <>
-              <span className="line-through text-sm text-gray-400">
-                ₦{product?.price}
+              <span className="text-sm text-muted-foreground line-through">
+                ₦{product?.price?.toLocaleString()}
               </span>
-              <span className="text-base md:text-lg font-bold text-gray-4000">
-                ₦{product?.salePrice}
+              <span className="font-display text-base font-bold text-foreground md:text-lg">
+                ₦{product?.salePrice?.toLocaleString()}
               </span>
             </>
           ) : (
-            <span className="text-base md:text-lg font-bold">
-              ₦{product?.price}
+            <span className="font-display text-base font-bold text-foreground md:text-lg">
+              ₦{product?.price?.toLocaleString()}
             </span>
           )}
         </div>

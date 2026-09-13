@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import WishlistCard from "./WishlistCard";
 import { fetchWishlist } from "@/store/shop/wishlist-slice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ShoppingHeader from "../header";
-import ProductDetailsDialog from "../product-details";
+import Spinner from "@/components/common/spinner";
 
 const WishlistPage = ({ userId }) => {
   const dispatch = useDispatch();
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   const {
     items = [],
@@ -25,33 +24,36 @@ const WishlistPage = ({ userId }) => {
   }, [dispatch, user?.id]);
 
   const handleCardClick = (product) => {
-    setSelectedProduct(product);
-    setIsDialogOpen(true);
+    navigate(`/shop/product/${product._id}`);
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <ShoppingHeader />
-      <div className="container mx-auto px-12 py-8">
-        <h1 className="text-2xl font-bold mb-6">My Wishlist</h1>
+      <div className="mx-auto max-w-[1344px] px-5 py-8 md:px-10 lg:px-12">
+        <h1 className="mb-6 font-display text-2xl font-bold text-foreground">My Wishlist</h1>
 
-        {loading && <p>Loading wishlist...</p>}
+        {loading && (
+          <div className="flex items-center justify-center py-16">
+            <Spinner className="h-7 w-7 text-primary" />
+          </div>
+        )}
 
         {error && (
-          <p className="text-red-600 mb-4">Error loading wishlist: {error}</p>
+          <p className="mb-4 text-sm text-destructive">Error loading wishlist: {error}</p>
         )}
 
         {!loading && items.length === 0 && (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-              Your wishlist is empty 💤
+          <div className="py-20 text-center">
+            <h2 className="mb-2 font-display text-xl font-bold text-foreground">
+              Your wishlist is empty
             </h2>
-            <p className="text-gray-500 mb-6">
+            <p className="mb-6 text-sm text-muted-foreground">
               Save items you love and come back to them later!
             </p>
             <Link
               to="/shop/home"
-              className="inline-block bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition"
+              className="inline-block rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
             >
               Start Shopping
             </Link>
@@ -59,7 +61,7 @@ const WishlistPage = ({ userId }) => {
         )}
 
         {!loading && items.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map(({ product }) =>
               product ? (
                 <WishlistCard
@@ -73,12 +75,6 @@ const WishlistPage = ({ userId }) => {
           </div>
         )}
       </div>
-
-      <ProductDetailsDialog
-        open={isDialogOpen}
-        setOpen={setIsDialogOpen}
-        productDetails={selectedProduct}
-      />
     </div>
   );
 };

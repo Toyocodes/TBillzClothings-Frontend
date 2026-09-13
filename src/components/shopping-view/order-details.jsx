@@ -1,60 +1,41 @@
 import { useSelector } from "react-redux";
 import { Badge } from "../ui/badge";
 import { DialogContent } from "../ui/dialog";
-import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { getOrderStatusBadgeClass } from "@/lib/utils";
 
 function ShoppingOrderDetailsView({ orderDetails }) {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <DialogContent
-      className="w-full sm:max-w-[600px] max-w-[90vw] max-h-[80vh] overflow-auto rounded-xl border bg-white p-6 shadow-xl"
-      style={{
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        backdropFilter: "blur(10px)",
-      }}
-      overlayClassName="!bg-black/10"
-    >
+    <DialogContent className="max-h-[85vh] w-full max-w-[90vw] overflow-auto rounded-2xl border-border bg-card p-6 sm:max-w-[600px]">
       <div className="space-y-6">
         <div>
-          <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
+          <h3 className="mb-4 font-display text-lg font-bold text-foreground">Order Summary</h3>
+          <div className="space-y-2.5 text-sm">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Order ID:</span>
-              <Label>{orderDetails?._id}</Label>
+              <span className="truncate font-medium text-foreground">{orderDetails?._id}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Order Date:</span>
-              <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
+              <span className="font-medium text-foreground">{orderDetails?.orderDate.split("T")[0]}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Total Price:</span>
-              <Label>₦{orderDetails?.totalAmount}</Label>
+              <span className="font-medium text-foreground">₦{orderDetails?.totalAmount?.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Payment Method:</span>
-              <Label>{orderDetails?.paymentMethod}</Label>
+              <span className="font-medium capitalize text-foreground">{orderDetails?.paymentMethod}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Payment Status:</span>
-              <Label>{orderDetails?.paymentStatus}</Label>
+              <span className="font-medium capitalize text-foreground">{orderDetails?.paymentStatus}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex items-center justify-between gap-4">
               <span className="text-muted-foreground">Order Status:</span>
-              <Badge
-                className={`text-white ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-orange-500"
-                    : orderDetails?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : orderDetails?.orderStatus === "inShipping"
-                    ? "bg-yellow-500"
-                    : orderDetails?.orderStatus === "delivered"
-                    ? "bg-green-600"
-                    : "bg-slate-500"
-                }`}
-              >
+              <Badge className={getOrderStatusBadgeClass(orderDetails?.orderStatus)}>
                 {orderDetails?.orderStatus}
               </Badge>
             </div>
@@ -64,17 +45,17 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         <Separator />
 
         <div>
-          <h3 className="text-xl font-semibold mb-4">Order Items</h3>
+          <h3 className="mb-4 font-display text-lg font-bold text-foreground">Order Items</h3>
           <ul className="space-y-2 text-sm">
             {orderDetails?.cartItems?.map((item, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center rounded-lg bg-muted px-4 py-2"
+                className="flex items-center justify-between gap-3 rounded-xl bg-secondary/50 px-4 py-2.5"
               >
-                <span className="text-foreground font-medium">{item.title}</span>
-                <div className="flex items-center gap-4 text-muted-foreground">
+                <span className="truncate font-medium text-foreground">{item.title}</span>
+                <div className="flex flex-shrink-0 items-center gap-4 text-muted-foreground">
                   <span>Qty: {item.quantity}</span>
-                  <span>₦{item.price}</span>
+                  <span>₦{item.price?.toLocaleString()}</span>
                 </div>
               </li>
             ))}
@@ -84,7 +65,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
         <Separator />
 
         <div>
-          <h3 className="text-xl font-semibold mb-4">Shipping Information</h3>
+          <h3 className="mb-4 font-display text-lg font-bold text-foreground">Shipping Information</h3>
           <div className="space-y-1 text-sm text-muted-foreground">
             <p><span className="font-medium text-foreground">Name:</span> {user.userName}</p>
             <p>{orderDetails?.addressInfo?.address}</p>

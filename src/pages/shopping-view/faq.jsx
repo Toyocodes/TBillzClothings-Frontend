@@ -8,6 +8,7 @@ import {
   Undo2,
   HeadphonesIcon,
   ChevronDown,
+  MessageCircle,
 } from "lucide-react";
 
 const faqs = [
@@ -84,12 +85,12 @@ const faqs = [
         a: (
           <>
             You can reach us via email at{" "}
-            <span className="font-medium">support@yourstore.com</span> or{" "}
+            <span className="font-medium text-foreground">support@yourstore.com</span> or{" "}
             <a
               href="https://wa.me/2348097662998"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-green-600 font-medium hover:underline"
+              className="font-medium text-primary hover:underline"
             >
               WhatsApp (+234 809 766 2998)
             </a>
@@ -113,17 +114,29 @@ export default function FAQPage() {
   };
 
   return (
-    <div className=" px-4 py-16">
-      <h1 className="text-3xl font-bold text-center mb-8">
-        Frequently Asked Questions
-      </h1>
+    <div className="mx-auto max-w-[900px] px-5 py-16 md:px-8">
+      <div className="mb-12 text-center">
+        <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
+          Help Center
+        </span>
+        <h1 className="mt-4 font-display text-3xl font-bold text-foreground md:text-4xl">
+          Frequently Asked Questions
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          Everything you need to know about ordering, shipping, and support.
+        </p>
+      </div>
 
-      <div className="px-10 md:px-20 lg:px-40 space-y-6">
+      <div className="space-y-10">
         {faqs.map((section, sectionIdx) => (
-          <div key={sectionIdx} className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <section.icon className="w-5 h-5 text-[#71c601]" />
-              <h2 className="text-xl font-semibold">{section.section}</h2>
+          <div key={section.section}>
+            <div className="mb-4 flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <section.icon className="h-4 w-4" />
+              </span>
+              <h2 className="font-display text-lg font-bold text-foreground">
+                {section.section}
+              </h2>
             </div>
 
             <div className="space-y-3">
@@ -133,21 +146,21 @@ export default function FAQPage() {
                 return (
                   <div
                     key={indexKey}
-                    className="border border-gray-200 rounded-lg overflow-hidden"
+                    className="overflow-hidden rounded-2xl border border-border bg-card"
                   >
                     <button
                       onClick={() => toggleQuestion(indexKey)}
-                      className="w-full flex justify-between items-center p-4 text-left font-medium hover:bg-gray-50 transition"
+                      className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-semibold text-foreground transition-colors hover:bg-secondary/60 md:text-base"
                     >
                       {item.q}
                       <ChevronDown
-                        className={`w-5 h-5 transform transition-transform ${
+                        className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform ${
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
                     </button>
                     {isOpen && (
-                      <div className="p-4 text-gray-600 border-t bg-gray-50">
+                      <div className="border-t border-border p-4 text-sm leading-relaxed text-muted-foreground">
                         {item.a}
                       </div>
                     )}
@@ -160,18 +173,20 @@ export default function FAQPage() {
       </div>
 
       {/* Contact Section */}
-      <div className="mt-10 text-center">
-        <p className="text-gray-700">
-          Still have questions?{" "}
-          <a
-            href="https://wa.me/2348097662998"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-600 hover:underline font-medium"
-          >
-            Chat with us on WhatsApp
-          </a>
+      <div className="mt-14 rounded-2xl border border-border bg-card p-8 text-center">
+        <MessageCircle className="mx-auto mb-3 h-6 w-6 text-primary" />
+        <p className="font-display text-lg font-bold text-foreground">Still have questions?</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Our team typically replies within a few hours.
         </p>
+        <a
+          href="https://wa.me/2348097662998"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-bold text-white hover:opacity-90"
+        >
+          Chat with us on WhatsApp
+        </a>
       </div>
     </div>
   );

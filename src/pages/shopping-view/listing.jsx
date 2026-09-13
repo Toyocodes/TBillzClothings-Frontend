@@ -1,5 +1,4 @@
 import ProductFilter from "@/components/shopping-view/filter";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,16 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import Spinner from "@/components/common/spinner";
 import { sortOptions } from "@/config";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
-import { ArrowUpDownIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
+import { ArrowUpDownIcon, ChevronDownIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -37,7 +34,8 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
+  const navigate = useNavigate();
+  const { productList, isLoading: isProductsLoading } = useSelector(
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -45,10 +43,35 @@ function ShoppingListing() {
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
 
   const categorySearchParam = searchParams.get("category");
+
+  const priceBounds = useMemo(() => {
+    const prices = (productList || [])
+      .map((p) => (p?.salePrice > 0 ? p.salePrice : p?.price))
+      .filter((n) => typeof n === "number" && !Number.isNaN(n));
+
+    if (!prices.length) return [0, 100000];
+
+    const min = Math.floor(Math.min(...prices) / 1000) * 1000;
+    const maxRaw = Math.ceil(Math.max(...prices) / 1000) * 1000;
+    const max = maxRaw === min ? min + 10000 : maxRaw;
+    return [min, max];
+  }, [productList]);
+
+  const [priceRange, setPriceRange] = useState(priceBounds);
+
+  useEffect(() => {
+    setPriceRange(priceBounds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceBounds[0], priceBounds[1]]);
+
+  const priceFilteredList = (productList || []).filter((product) => {
+    const effectivePrice =
+      product?.salePrice > 0 ? product.salePrice : product?.price;
+    return effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
+  });
 
   function handleSort(value) {
     setSort(value);
@@ -77,7 +100,7 @@ function ShoppingListing() {
   }
 
   function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
+    navigate(`/shop/product/${getCurrentProductId}`);
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
@@ -135,63 +158,72 @@ function ShoppingListing() {
       );
   }, [dispatch, sort, filters]);
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
-      <ProductFilter filters={filters} handleFilter={handleFilter} />
-      <div className="bg-background w-full rounded-lg shadow-sm">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">All Products</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground">
-              {productList?.length} Products
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1"
-                >
-                  <ArrowUpDownIcon className="h-4 w-4" />
-                  <span>Sort by</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
-                  {sortOptions.map((sortItem) => (
-                    <DropdownMenuRadioItem
-                      value={sortItem.id}
-                      key={sortItem.id}
-                    >
-                      {sortItem.label}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem) => (
-                <ShoppingProductTile
-                  handleGetProductDetails={handleGetProductDetails}
-                  product={productItem}
-                  handleAddtoCart={handleAddtoCart}
-                />
-              ))
-            : null}
-        </div>
-      </div>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
+    <div className="mx-auto grid max-w-[1344px] grid-cols-1 gap-8 px-5 py-8 md:grid-cols-[264px_1fr] md:px-10 md:py-10 lg:px-12">
+      <ProductFilter
+        filters={filters}
+        handleFilter={handleFilter}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        priceBounds={priceBounds}
       />
+      <div className="w-full">
+        <div className="mb-5 flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            {isProductsLoading
+              ? "Loading products…"
+              : `${priceFilteredList.length} products found`}
+          </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 rounded-xl border-border bg-card"
+              >
+                <ArrowUpDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>Sort by</span>
+                <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[200px]">
+              <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
+                {sortOptions.map((sortItem) => (
+                  <DropdownMenuRadioItem
+                    value={sortItem.id}
+                    key={sortItem.id}
+                  >
+                    {sortItem.label}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {isProductsLoading ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-20">
+            <Spinner className="h-7 w-7 text-primary" />
+            <p className="text-sm text-muted-foreground">Loading products&hellip;</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {priceFilteredList.length > 0
+              ? priceFilteredList.map((productItem) => (
+                  <ShoppingProductTile
+                    key={productItem?._id}
+                    handleGetProductDetails={handleGetProductDetails}
+                    product={productItem}
+                    handleAddtoCart={handleAddtoCart}
+                  />
+                ))
+              : (
+                  <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                    No products match the selected price range.
+                  </p>
+                )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

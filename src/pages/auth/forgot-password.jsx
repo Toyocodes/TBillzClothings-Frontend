@@ -2,7 +2,7 @@ import CommonForm from "@/components/common/form";
 import { useToast } from "@/components/ui/use-toast";
 import { forgotPassword } from "@/store/auth-slice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const initialState = {
@@ -22,6 +22,7 @@ const forgotPasswordControls = [
 function ForgotPassword() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
   const { toast } = useToast();
 
   function onSubmit(e) {
@@ -44,10 +45,10 @@ function ForgotPassword() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold">Forgot Password</h1>
-        <p className="mt-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Forgot Password</h1>
+        <p className="mt-2 text-muted-foreground">
           Remember your password?
-          <Link to="/auth/login" className="ml-2 underline">
+          <Link to="/auth/login" className="ml-2 font-medium text-primary hover:underline">
             Login
           </Link>
         </p>
@@ -59,6 +60,7 @@ function ForgotPassword() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -74,50 +74,58 @@ function UserCartItemsContent({ cartItem }) {
   }
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex gap-3.5">
       <img
         src={cartItem?.image}
         alt={cartItem?.title}
-        className="w-20 h-20 rounded object-cover"
+        className="h-[72px] w-[72px] flex-shrink-0 rounded-2xl border border-border object-cover"
       />
-      <div className="flex-1">
-        <h3 className="font-extrabold">{cartItem?.title}</h3>
-        <div className="flex items-center gap-2 mt-1">
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            disabled={cartItem?.quantity === 1}
-            onClick={() => handleUpdateQuantity(cartItem, "minus")}
+      <div className="flex flex-1 flex-col gap-1.5">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-sm font-semibold leading-snug text-foreground">
+            {cartItem?.title}
+          </h3>
+          <button
+            onClick={() => handleCartItemDelete(cartItem)}
+            className="flex-shrink-0 p-0.5 text-muted-foreground transition-colors hover:text-destructive"
           >
-            <Minus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
-          </Button>
-          <span className="font-semibold">{cartItem?.quantity}</span>
-          <Button
-            variant="outline"
-            className="h-8 w-8 rounded-full"
-            size="icon"
-            onClick={() => handleUpdateQuantity(cartItem, "plus")}
-          >
-            <Plus className="w-4 h-4" />
-            <span className="sr-only">Decrease</span>
-          </Button>
+            <Trash className="h-4 w-4" />
+            <span className="sr-only">Remove</span>
+          </button>
         </div>
-      </div>
-      <div className="flex flex-col items-end">
-        <p className="font-semibold">
-          ₦
-          {(
-            (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
-            cartItem?.quantity
-          ).toFixed(2)}
-        </p>
-        <Trash
-          onClick={() => handleCartItemDelete(cartItem)}
-          className="cursor-pointer mt-1"
-          size={20}
-        />
+        <div className="mt-1 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 rounded-full border border-border p-1">
+            <Button
+              variant="ghost"
+              className="h-[22px] w-[22px] rounded-full bg-secondary p-0"
+              size="icon"
+              disabled={cartItem?.quantity === 1}
+              onClick={() => handleUpdateQuantity(cartItem, "minus")}
+            >
+              <Minus className="h-2.5 w-2.5" />
+              <span className="sr-only">Decrease</span>
+            </Button>
+            <span className="min-w-[10px] text-center text-sm font-bold text-foreground">
+              {cartItem?.quantity}
+            </span>
+            <Button
+              variant="ghost"
+              className="h-[22px] w-[22px] rounded-full bg-secondary p-0"
+              size="icon"
+              onClick={() => handleUpdateQuantity(cartItem, "plus")}
+            >
+              <Plus className="h-2.5 w-2.5" />
+              <span className="sr-only">Increase</span>
+            </Button>
+          </div>
+          <p className="font-display text-sm font-bold text-foreground">
+            ₦
+            {(
+              (cartItem?.salePrice > 0 ? cartItem?.salePrice : cartItem?.price) *
+              cartItem?.quantity
+            ).toLocaleString()}
+          </p>
+        </div>
       </div>
     </div>
   );
