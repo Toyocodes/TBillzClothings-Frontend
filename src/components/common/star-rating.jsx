@@ -1,24 +1,36 @@
 import { StarIcon } from "lucide-react";
-import { Button } from "../ui/button";
 
 function StarRatingComponent({ rating, handleRatingChange }) {
-  return [1, 2, 3, 4, 5].map((star) => (
-    <Button
-      key={star}
-      className={`border-none transition-colors ${
-        star <= rating
-          ? "text-primary hover:bg-primary/10"
-          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-      }`}
-      variant="outline"
-      size="icon"
-      onClick={handleRatingChange ? () => handleRatingChange(star) : null}
-    >
-      <StarIcon
-        className={`h-4 w-4 ${star <= rating ? "fill-primary" : "fill-transparent"}`}
-      />
-    </Button>
-  ));
+  const isInteractive = Boolean(handleRatingChange);
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const filled = star <= rating;
+        return (
+          <button
+            key={star}
+            type="button"
+            disabled={!isInteractive}
+            onClick={isInteractive ? () => handleRatingChange(star) : undefined}
+            className={`p-0 ${
+              isInteractive
+                ? "cursor-pointer transition-transform hover:scale-110"
+                : "cursor-default"
+            }`}
+          >
+            <StarIcon
+              className={`h-4 w-4 ${
+                filled
+                  ? "fill-amber-400 text-amber-400"
+                  : "fill-transparent text-border"
+              }`}
+            />
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 export default StarRatingComponent;
