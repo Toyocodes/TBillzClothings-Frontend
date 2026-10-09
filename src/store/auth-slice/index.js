@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "../../lib/axios";
+import { resetCart } from "../shop/cart-slice";
 
 const initialState = {
   isAuthenticated: false,
@@ -64,16 +65,24 @@ export const resetPassword = createAsyncThunk(
 export const logoutUser = createAsyncThunk(
   "/auth/logout",
 
-  async () => {
-    const response = await axios.post(
-      "/auth/logout",
-      {},
-      {
-        withCredentials: true,
-      },
-    );
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        },
+      );
 
-    return response.data;
+      dispatch(resetCart());
+      return response.data;
+    } catch (error) {
+      dispatch(resetCart());
+      return rejectWithValue(
+        error.response?.data || { message: "Logout failed" },
+      );
+    }
   },
 );
 
@@ -147,6 +156,11 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(logoutUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
         state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;

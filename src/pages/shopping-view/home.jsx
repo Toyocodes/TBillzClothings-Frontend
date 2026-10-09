@@ -34,7 +34,7 @@ const categoriesWithIcon = [
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, isLoading: isProductsLoading } = useSelector(
-    (state) => state.shopProducts
+    (state) => state.shopProducts,
   );
 
   const featureImageList = [
@@ -44,7 +44,8 @@ function ShoppingHome() {
       tag: "Smartphones",
       icon: Smartphone,
       title: "Discover Our Exclusive Tech Collection",
-      description: "Handpicked gadgets built for performance, style, and everyday use.",
+      description:
+        "Handpicked gadgets built for performance, style, and everyday use.",
     },
     {
       id: 2,
@@ -52,7 +53,8 @@ function ShoppingHome() {
       tag: "Laptops",
       icon: Laptop,
       title: "Experience Innovation at Your Fingertips",
-      description: "Upgrade your life with the latest phones, laptops, and smart devices.",
+      description:
+        "Upgrade your life with the latest phones, laptops, and smart devices.",
     },
     {
       id: 3,
@@ -85,20 +87,34 @@ function ShoppingHome() {
   }
 
   function handleAddtoCart(getCurrentProductId) {
+    if (!user?.id) {
+      toast({
+        title: "Please log in to add items to your cart",
+        variant: "destructive",
+      });
+      return;
+    }
+
     dispatch(
       addToCart({
-        userId: user?.id,
+        userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+      }),
+    )
+      .unwrap()
+      .then((data) => {
+        dispatch(fetchCartItems(user.id));
         toast({
-          title: "Product is added to cart",
+          title: data?.message || "Product is added to cart",
         });
-      }
-    });
+      })
+      .catch((error) => {
+        toast({
+          title: error?.message || "Please log in to add items to your cart",
+          variant: "destructive",
+        });
+      });
   }
 
   useEffect(() => {
@@ -114,7 +130,7 @@ function ShoppingHome() {
       fetchAllFilteredProducts({
         filterParams: {},
         sortParams: "price-lowtohigh",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -148,12 +164,20 @@ function ShoppingHome() {
             </Button>
             <div className="flex gap-8 pt-2">
               <div>
-                <div className="font-display text-xl font-bold text-foreground">4.8&#9733;</div>
-                <div className="text-xs text-muted-foreground">Average rating</div>
+                <div className="font-display text-xl font-bold text-foreground">
+                  4.8&#9733;
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Average rating
+                </div>
               </div>
               <div>
-                <div className="font-display text-xl font-bold text-foreground">24h</div>
-                <div className="text-xs text-muted-foreground">Fast delivery</div>
+                <div className="font-display text-xl font-bold text-foreground">
+                  24h
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Fast delivery
+                </div>
               </div>
             </div>
           </div>
@@ -249,24 +273,26 @@ function ShoppingHome() {
           {isProductsLoading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-20">
               <Spinner className="h-7 w-7 text-primary" />
-              <p className="text-sm text-muted-foreground">Loading products&hellip;</p>
+              <p className="text-sm text-muted-foreground">
+                Loading products&hellip;
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {productList && productList.length > 0
-                ? productList.map((productItem) => (
-                    <ShoppingProductTile
-                      key={productItem?._id}
-                      handleGetProductDetails={handleGetProductDetails}
-                      product={productItem}
-                      handleAddtoCart={handleAddtoCart}
-                    />
-                  ))
-                : (
-                    <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
-                      No products available right now.
-                    </p>
-                  )}
+              {productList && productList.length > 0 ? (
+                productList.map((productItem) => (
+                  <ShoppingProductTile
+                    key={productItem?._id}
+                    handleGetProductDetails={handleGetProductDetails}
+                    product={productItem}
+                    handleAddtoCart={handleAddtoCart}
+                  />
+                ))
+              ) : (
+                <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                  No products available right now.
+                </p>
+              )}
             </div>
           )}
         </div>
