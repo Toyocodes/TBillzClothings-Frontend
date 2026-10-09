@@ -20,46 +20,38 @@ export const addToCart = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error.response?.data);
     }
-  }
+  },
 );
-
 
 export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId) => {
-    const response = await axios.get(
-      `/shop/cart/get/${userId}`
-    );
+    const response = await axios.get(`/shop/cart/get/${userId}`);
 
     return response.data;
-  }
+  },
 );
 
 export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
   async ({ userId, productId }) => {
-    const response = await axios.delete(
-      `/shop/cart/${userId}/${productId}`
-    );
+    const response = await axios.delete(`/shop/cart/${userId}/${productId}`);
 
     return response.data;
-  }
+  },
 );
 
 export const updateCartQuantity = createAsyncThunk(
   "cart/updateCartQuantity",
   async ({ userId, productId, quantity }) => {
-    const response = await axios.put(
-      "/shop/cart/update-cart",
-      {
-        userId,
-        productId,
-        quantity,
-      }
-    );
+    const response = await axios.put("/shop/cart/update-cart", {
+      userId,
+      productId,
+      quantity,
+    });
 
     return response.data;
-  }
+  },
 );
 
 const shoppingCartSlice = createSlice({
@@ -70,12 +62,17 @@ const shoppingCartSlice = createSlice({
     clearCartError(state) {
       state.error = null;
     },
+    resetCart(state) {
+      state.cartItems = [];
+      state.isLoading = false;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(addToCart.pending, (state) => {
         state.isLoading = true;
-        state.error = null; 
+        state.error = null;
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -121,5 +118,5 @@ const shoppingCartSlice = createSlice({
   },
 });
 
-export const { clearCartError } = shoppingCartSlice.actions;
+export const { clearCartError, resetCart } = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;

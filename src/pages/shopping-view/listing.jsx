@@ -36,7 +36,7 @@ function ShoppingListing() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { productList, isLoading: isProductsLoading } = useSelector(
-    (state) => state.shopProducts
+    (state) => state.shopProducts,
   );
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
@@ -104,11 +104,19 @@ function ShoppingListing() {
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    if (!user?.id) {
+      toast({
+        title: "Please log in to add items to your cart",
+        variant: "destructive",
+      });
+      return;
+    }
+
     let getCartItems = cartItems.items || [];
 
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
+        (item) => item.productId === getCurrentProductId,
       );
       if (indexOfCurrentItem > -1) {
         const getQuantity = getCartItems[indexOfCurrentItem].quantity;
@@ -125,18 +133,24 @@ function ShoppingListing() {
 
     dispatch(
       addToCart({
-        userId: user?.id,
+        userId: user.id,
         productId: getCurrentProductId,
         quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
+      }),
+    )
+      .unwrap()
+      .then((data) => {
+        dispatch(fetchCartItems(user.id));
         toast({
-          title: "Product is added to cart",
+          title: data?.message || "Product is added to cart",
         });
-      }
-    });
+      })
+      .catch((error) => {
+        toast({
+          title: error?.message || "Please log in to add items to your cart",
+          variant: "destructive",
+        });
+      });
   }
 
   useEffect(() => {
@@ -154,7 +168,7 @@ function ShoppingListing() {
   useEffect(() => {
     if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort }),
       );
   }, [dispatch, sort, filters]);
 
@@ -189,10 +203,7 @@ function ShoppingListing() {
             <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
                 {sortOptions.map((sortItem) => (
-                  <DropdownMenuRadioItem
-                    value={sortItem.id}
-                    key={sortItem.id}
-                  >
+                  <DropdownMenuRadioItem value={sortItem.id} key={sortItem.id}>
                     {sortItem.label}
                   </DropdownMenuRadioItem>
                 ))}
@@ -203,24 +214,26 @@ function ShoppingListing() {
         {isProductsLoading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-20">
             <Spinner className="h-7 w-7 text-primary" />
-            <p className="text-sm text-muted-foreground">Loading products&hellip;</p>
+            <p className="text-sm text-muted-foreground">
+              Loading products&hellip;
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {priceFilteredList.length > 0
-              ? priceFilteredList.map((productItem) => (
-                  <ShoppingProductTile
-                    key={productItem?._id}
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                  />
-                ))
-              : (
-                  <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
-                    No products match the selected price range.
-                  </p>
-                )}
+            {priceFilteredList.length > 0 ? (
+              priceFilteredList.map((productItem) => (
+                <ShoppingProductTile
+                  key={productItem?._id}
+                  handleGetProductDetails={handleGetProductDetails}
+                  product={productItem}
+                  handleAddtoCart={handleAddtoCart}
+                />
+              ))
+            ) : (
+              <p className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                No products match the selected price range.
+              </p>
+            )}
           </div>
         )}
       </div>
